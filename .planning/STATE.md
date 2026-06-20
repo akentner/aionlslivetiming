@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 03 context gathered
-last_updated: "2026-06-20T23:40:05.148Z"
-last_activity: 2026-06-20
+status: ready_to_execute
+stopped_at: Phase 03 plans written and committed
+last_updated: "2026-06-21T00:00:00.000Z"
+last_activity: 2026-06-21
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 7
+  total_plans: 10
   completed_plans: 7
   percent: 0
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-20)
 
 **Core value:** Downstream Python projects can subscribe to a running NLS race and get typed, filtered, cached race data — live or replayed from a log — without ever touching the Azure WebSocket or the cryptic short-code JSON the server actually emits.
-**Current focus:** Phase 02 — state-filtering
+**Current focus:** Phase 03 — transport-replay
 
 ## Current Position
 
 Phase: 3
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-06-20
+Plan: Plans written (3/3), ready to execute
+Status: Phase planned — ready for execution
+Last activity: 2026-06-21
 
 Progress: [░░░░░░░░░░] 0%
 
