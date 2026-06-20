@@ -112,11 +112,14 @@ async def test_run_writes_one_jsonl_line_per_frame(tmp_path: pathlib.Path) -> No
     assert parsed[1]["raw"] == {"eventPid": 0, "PID": 12345, "RESULT": ["a"]}
     assert parsed[2]["raw"] == {"eventPid": 4, "TRACKSTATE": "GREEN"}
 
-    # The handshake should have been sent exactly once.
+    # The handshake should have been sent exactly once, with the wire format
+    # matching the JS bundle: ``{"eventId": "<id>", "eventPid": [...], "clientLocalTime": <ms>}``.
     assert len(ws.sent) == 1
     handshake = json.loads(ws.sent[0])
     assert handshake["eventId"] == "test-event"
-    assert handshake["type"] == "INIT"
+    assert handshake["eventPid"] == [0, 3, 4, 7, 501, 9002]
+    assert isinstance(handshake["clientLocalTime"], int)
+    assert handshake["clientLocalTime"] > 0
 
 
 async def test_run_handles_connection_closed(tmp_path: pathlib.Path) -> None:

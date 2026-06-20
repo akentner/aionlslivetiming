@@ -29,19 +29,23 @@ from typing import TYPE_CHECKING, Any
 from aionlslivetiming.logging import get_logger
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
+    from collections.abc import Awaitable, Callable, Sequence
 
 __all__ = ["main", "run"]
 
 _log = get_logger("aionlslivetiming.cli")
 
 #: Default host for the live NLS livetiming WebSocket.
+#: The endpoint lives at the root path (verified via WS sniff against
+#: ``https://livetiming.azurewebsites.net/events/{id}/results/`` and matching
+#: the JS bundle's ``factory("".concat(protocol, "://", host))`` pattern).
 DEFAULT_HOST: str = "wss://livetiming.azurewebsites.net/"
 
-#: Path suffix appended to the host for the livetiming handshake.
-#: Matches the JS bundle's ``wss://.../api/livetiming`` reverse-engineered
-#: pattern. Override with ``--host`` if the user knows the real path differs.
-_HANDSHAKE_PATH: str = "api/livetiming"
+#: Default channel IDs (PIDs) the client subscribes to via the ``eventPid``
+#: handshake array. Matches the JS bundle's default for the leaderboard view:
+#: 0 = initial state, 4 = track state, 7 = per-car laps, 501 = qualifying,
+#: 9002 = statistics, 3 = race messages. Override with ``--channels``.
+DEFAULT_CHANNELS: tuple[int, ...] = (0, 3, 4, 7, 501, 9002)
 
 
 def _json_dumps(obj: Any) -> str:
@@ -80,6 +84,7 @@ async def run(
     output_path: str | pathlib.Path,
     *,
     host: str = DEFAULT_HOST,
+    channels: Sequence[int] = DEFAULT_CHANNELS,
     max_seconds: float | None = None,
     websockets_factory: Callable[..., Awaitable[Any]] | None = None,
 ) -> int:
@@ -88,11 +93,18 @@ async def run(
     Parameters
     ----------
     event_id:
-        Event identifier sent in the initial handshake JSON.
+        Event identifier sent in the initial handshake JSON (as a string,
+        matching the JS bundle's ``{"eventId": "<id>"}`` contract).
     output_path:
         Destination JSONL file. The file is overwritten if it already exists.
     host:
-        WebSocket base URL. Defaults to the production NLS endpoint.
+        WebSocket base URL. Defaults to the production NLS endpoint at the
+        root path (verified by WS sniff).
+    channels:
+        Sequence of channel IDs (``eventPid`` values) to subscribe to in the
+        handshake. Each ID selects one NLS multiplex channel: 0 = initial
+        state, 3 = race messages, 4 = track state, 7 = per-car laps,
+        501 = qualifying, 9002 = statistics.
     max_seconds:
         If set, stop capturing after this many seconds and return ``0``.
     websockets_factory:
@@ -118,18 +130,25 @@ async def run(
     else:
         connect = websockets_factory
 
-    url = f"{host.rstrip('/')}/{_HANDSHAKE_PATH}"
+    url = host.rstrip("/") + "/"
     out = pathlib.Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
     deadline: float | None = time.monotonic() + max_seconds if max_seconds is not None else None
 
-    _log.info("connecting to %s for event %s", url, event_id)
+    _log.info("connecting to %s for event %s (channels=%s)", url, event_id, list(channels))
 
     try:
         async with await connect(url, open_timeout=10, ping_interval=20, ping_timeout=20) as ws:
-            # Initial handshake — matches the JS bundle's onopen send.
-            handshake = _json_dumps({"eventId": event_id, "type": "INIT"})
+            # Initial handshake — matches the JS bundle's onopen send:
+            # ``{"eventId":"<id>","eventPid":[<channels>],"clientLocalTime":<ms>}``.
+            handshake = _json_dumps(
+                {
+                    "eventId": str(event_id),
+                    "eventPid": list(channels),
+                    "clientLocalTime": int(time.time() * 1000),
+                }
+            )
             await ws.send(handshake)
             _log.info("handshake sent, capturing frames to %s", out)
 
@@ -194,6 +213,14 @@ def main(argv: list[str] | None = None) -> int:
         help=f"WebSocket base URL (default: {DEFAULT_HOST})",
     )
     parser.add_argument(
+        "--channels",
+        default=",".join(str(c) for c in DEFAULT_CHANNELS),
+        help=(
+            "Comma-separated channel IDs to subscribe to via the eventPid "
+            f"handshake (default: {','.join(str(c) for c in DEFAULT_CHANNELS)})."
+        ),
+    )
+    parser.add_argument(
         "--max-seconds",
         type=float,
         default=None,
@@ -207,11 +234,14 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
+    channels = tuple(int(c.strip()) for c in args.channels.split(",") if c.strip())
+
     return asyncio.run(
         run(
             event_id=args.event_id,
             output_path=args.output,
             host=args.host,
+            channels=channels,
             max_seconds=args.max_seconds,
         )
     )
