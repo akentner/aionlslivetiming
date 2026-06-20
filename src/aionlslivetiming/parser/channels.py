@@ -13,12 +13,12 @@ can write ``from aionlslivetiming.parser import EVENT_PID_RESULT``.
 from __future__ import annotations
 
 __all__ = [
-    "EVENT_PID_RESULT",
-    "EVENT_PID_RACE_MESSAGE",
-    "EVENT_PID_TRACK_STATE",
     "EVENT_PID_PER_CAR_LAPS",
     "EVENT_PID_QUALIFYING",
+    "EVENT_PID_RACE_MESSAGE",
+    "EVENT_PID_RESULT",
     "EVENT_PID_STATISTICS",
+    "EVENT_PID_TRACK_STATE",
 ]
 
 #: Initial results payload and ongoing race-position updates.
