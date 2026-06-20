@@ -58,7 +58,12 @@ Plans:
   3. Client auto-reconnects with jittered exponential backoff on transient errors, honors the server's `{type:"time"}` heartbeat to drive application-level keepalive, surfaces `LTS_NOT_FOUND` as a typed three-state event (not_yet_started / ended / unknown_event), and survives session transitions (qualifying → heat → race) without crashing or losing cached state
   4. User can record a live stream to a JSONL file (one parsed message per line) and replay that file through an identical API surface with optional speed multiplier — fully usable offline
   5. User can fetch the optional `/event/{id}/laps-data` endpoint via an HA-compatible async HTTP client (httpx), with graceful handling when the server returns HTML instead of JSON
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Transport Protocol + exceptions + ReplayTransport + JsonlRecorder (no network)
+- [ ] 03-02-PLAN.md — LiveTransport (WebSocket + handshake + heartbeat + reconnect + LTS_NOT_FOUND three-state)
+- [ ] 03-03-PLAN.md — RecordingTransport composition wrapper + HTTP laps-data fallback + integration tests + UAT
 
 ### Phase 4: Client + Distribution
 **Goal**: A single `NLSClient` composition root that wires transport → parser → state with cancellation-safe async iteration, plus CLI entry points, complete documentation, and a publish-ready PyPI package.
@@ -80,5 +85,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation (Package + Parser) | 4/4 | Complete | 2026-06-20 |
 | 2. State + Filtering | 3/3 | Complete   | 2026-06-20 |
-| 3. Transport + Replay | 0/TBD | Not started | - |
+| 3. Transport + Replay | 0/3 | Not started | - |
 | 4. Client + Distribution | 0/TBD | Not started | - |
