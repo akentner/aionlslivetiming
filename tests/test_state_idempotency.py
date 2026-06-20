@@ -18,7 +18,6 @@ from aionlslivetiming.events import (
 from aionlslivetiming.events.common import BestSector, CarResult, SessionInfo, TimeOfDay
 from aionlslivetiming.state import RaceState
 from aionlslivetiming.state.lap import LapRecord
-
 from tests.test_state_apply import state_to_dict
 
 

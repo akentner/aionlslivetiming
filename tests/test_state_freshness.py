@@ -10,7 +10,7 @@ from aionlslivetiming.events import (
     StatisticsMessage,
     TrackStateMessage,
 )
-from aionlslivetiming.events.common import BestSector, CarResult, SessionInfo, TimeOfDay
+from aionlslivetiming.events.common import BestSector, CarResult, SessionInfo
 from aionlslivetiming.state import Freshness, RaceState, Source
 
 

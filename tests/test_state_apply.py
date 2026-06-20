@@ -348,6 +348,8 @@ def state_to_dict(state: RaceState) -> dict[str, Any]:
         "track_name": state.track_name,
         "messages": [m.text for m in state.messages],
         "qualifying": [r.model_dump() if hasattr(r, "model_dump") else r for r in state.qualifying],
-        "stats_leading": [r.model_dump() if hasattr(r, "model_dump") else r for r in state.stats_leading],
+        "stats_leading": [
+            r.model_dump() if hasattr(r, "model_dump") else r for r in state.stats_leading
+        ],
         "stats_best_sectors": dict(state.stats_best_sectors),
     }
