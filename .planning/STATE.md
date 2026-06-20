@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-06-20T17:41:35.740Z"
+status: verifying
+stopped_at: Completed 02-03-PLAN.md (Phase 02 complete)
+last_updated: "2026-06-20T23:19:18.739Z"
 last_activity: 2026-06-20
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 
 Phase: 02 (state-filtering) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-20
 
 Progress: [░░░░░░░░░░] 0%
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation-package-parser P03 | 7min | 2 tasks | 24 files |
 | Phase 02-state-filtering P01 | 360 | 1 tasks | 11 files |
 | Phase 02-state-filtering P02 | 380 | 1 tasks | 5 files |
+| Phase 02-state-filtering P03 | 600 | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 02-state-filtering]: Per-type idempotency strategies: PID 0 = full cars dict reset; PID 4 = replace TrackState instance; PID 3 = dedupe on (text, category, starting_no, session); PID 7 = keyed by (session, starting_no, lap_no) last-write-wins; PID 501 = replace results tuple; PID 9002 = keep min per (starting_no, sector)
 - [Phase 02-state-filtering]: Filter DSL: AND across dimensions, OR within driver substrings; list (not generator) return type per ARCHITECTURE.md line 161; both builder pattern (state.filter().by_class('SP9').top(5).cars()) and method-on-cache (state.cars_by_class('SP9')) exposed
 - [Phase 02-state-filtering]: FILT-01..07 design decisions: by_class/by_starting_no use set union (idempotent); by_driver case-insensitive substring (D-FILT-2) with OR across multiple substrings; by_position/by_lap inclusive bounds with unknown-position excluded by default; sector_time_lt strict less-than on per-car sector_bests
+- [Phase 02-state-filtering]: Malformed JSON / missing schema_version / wrong version / non-object all raise ValueError (D-PERSIST-5) — never silently returns empty state
+- [Phase 02-state-filtering]: Stdlib json over orjson for state persistence (D-PERSIST-1) — user-initiated path, not WS hot path; orjson stays optional extra
+- [Phase 02-state-filtering]: Idempotency contract preserved across round-trip (D-PERSIST-3) — _seen_message_keys rebuilt from _messages on import, re-applying RaceMessage after round-trip does not duplicate
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T17:41:35.737Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-06-20T23:18:58.520Z
+Stopped at: Completed 02-03-PLAN.md (Phase 02 complete)
 Resume file: None

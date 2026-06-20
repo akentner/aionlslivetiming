@@ -7,7 +7,7 @@ Build a bottom-up async-first Python client library for the Nürburgring Langstr
 ## Phases
 
 - [ ] **Phase 1: Foundation (Package + Parser)** - Skeleton, HA-pinned deps, 8 typed Message dataclasses, per-PID parsers, UnknownMessage fallback, parser fixtures and unit tests
-- [ ] **Phase 2: State + Filtering** - Idempotent RaceState, filter DSL (class/starting_no/driver/position/lap/sector), cache freshness, JSON export/import
+- [x] **Phase 2: State + Filtering** - Idempotent RaceState, filter DSL (class/starting_no/driver/position/lap/sector), cache freshness, JSON export/import (completed 2026-06-20)
 - [ ] **Phase 3: Transport + Replay** - Transport Protocol, LiveTransport (WebSocket + reconnect + heartbeat), ReplayTransport, RecordingTransport wrapper, HTTP laps-data fallback
 - [ ] **Phase 4: Client + Distribution** - NLSClient composition root, async stream API with cancellation safety, CLI entry points, README/API ref/CHANGELOG/LICENSE/CONTRIBUTING, PyPI publish prep
 
@@ -46,7 +46,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — state module skeleton + Source/Freshness enums + pydantic state models + idempotent RaceState.apply() + freshness/source/clear()
 - [x] 02-02-PLAN.md — composable Filter DSL (class/starting_no/driver/position/lap/sector_time_lt) + AND composition + RaceState.filter() factory + convenience pass-throughs
-- [ ] 02-03-PLAN.md — JSON snapshot persistence (to_json / from_json / import_json) with schema_version tag + round-trip + idempotency-key preservation
+- [x] 02-03-PLAN.md — JSON snapshot persistence (to_json / from_json / import_json) with schema_version tag + round-trip + idempotency-key preservation
 
 ### Phase 3: Transport + Replay
 **Goal**: A transport interface with three implementations (live WebSocket, JSONL replay, recording wrapper) plus the optional HTTP laps-data fallback — all feeding the same parser path so live and replay produce identical typed Messages.
@@ -79,6 +79,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation (Package + Parser) | 4/4 | Complete | 2026-06-20 |
-| 2. State + Filtering | 0/3 | Planned | - |
+| 2. State + Filtering | 3/3 | Complete   | 2026-06-20 |
 | 3. Transport + Replay | 0/TBD | Not started | - |
 | 4. Client + Distribution | 0/TBD | Not started | - |

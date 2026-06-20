@@ -31,8 +31,8 @@
 - [x] **STATE-03**: `RaceState.apply(message)` is idempotent: applying the same message twice produces the same state
 - [x] **STATE-04**: State exposes a `freshness` indicator (time of last update, source = live/replay/imported)
 - [x] **STATE-05**: User can clear the cache on demand (resets all sub-caches)
-- [ ] **STATE-06**: User can export the state to JSON
-- [ ] **STATE-07**: User can import a state from JSON (replaces current state)
+- [x] **STATE-06**: User can export the state to JSON
+- [x] **STATE-07**: User can import a state from JSON (replaces current state)
 
 ### Filtering
 
@@ -154,8 +154,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STATE-03 | Phase 2 | Complete |
 | STATE-04 | Phase 2 | Complete |
 | STATE-05 | Phase 2 | Complete |
-| STATE-06 | Phase 2 | Pending |
-| STATE-07 | Phase 2 | Pending |
+| STATE-06 | Phase 2 | Complete |
+| STATE-07 | Phase 2 | Complete |
 | FILT-01 | Phase 2 | Complete |
 | FILT-02 | Phase 2 | Complete |
 | FILT-03 | Phase 2 | Complete |
