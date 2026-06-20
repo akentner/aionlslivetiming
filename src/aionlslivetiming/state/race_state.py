@@ -182,6 +182,55 @@ class RaceState:
         """Convenience pass-through: top ``n`` cars by position."""
         return self.filter().top(n).cars()
 
+    # -------------------------------------------------------------- persistence
+    def to_json(self) -> str:
+        """Export the full state to a JSON string. Round-trip safe with :meth:`from_json`.
+
+        STATE-06. Stdlib json — no orjson dep, this path is user-initiated.
+        """
+        from aionlslivetiming.state.persistence import to_json as _to_json
+
+        return _to_json(self)
+
+    def import_json(self, s: str) -> None:
+        """Replace this state's contents with the deserialized snapshot.
+
+        STATE-07. Raises :class:`ValueError` on malformed JSON.
+        Idempotency-key set is rebuilt so re-applying an already-stored
+        :class:`~aionlslivetiming.events.RaceMessage` does not duplicate
+        it (D-PERSIST-3).
+        """
+        from aionlslivetiming.state.persistence import from_json as _from_json
+
+        new_state = _from_json(s)
+        self._source = new_state._source
+        self._freshness = new_state._freshness
+        self._last_update_ms = new_state._last_update_ms
+        self._cars = new_state._cars
+        self._track = new_state._track
+        self._track_name = new_state._track_name
+        self._session = new_state._session
+        self._ver = new_state._ver
+        self._export_id = new_state._export_id
+        self._messages = new_state._messages
+        self._seen_message_keys = new_state._seen_message_keys
+        self._laps = new_state._laps
+        self._qualifying = new_state._qualifying
+        self._stats_leading = new_state._stats_leading
+        self._stats_best_laps = new_state._stats_best_laps
+        self._stats_best_sectors = new_state._stats_best_sectors
+
+    @classmethod
+    def from_json(cls, s: str) -> RaceState:
+        """Construct a new :class:`RaceState` from a JSON snapshot.
+
+        STATE-07. Convenience classmethod that wraps the pure-function
+        :func:`~aionlslivetiming.state.persistence.from_json`.
+        """
+        from aionlslivetiming.state.persistence import from_json as _from_json
+
+        return _from_json(s)
+
     # -------------------------------------------------------------- mutators
     def set_source(self, source: Source) -> None:
         """Update the :class:`Source` label (e.g. ``LIVE`` → ``REPLAY``)."""
