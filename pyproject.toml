@@ -91,13 +91,14 @@ disallow_untyped_decorators = false
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
-addopts = "-ra --strict-markers --cov=aionlslivetiming/parser --cov=aionlslivetiming/events --cov-report=term-missing"
+addopts = "-ra --strict-markers --cov=aionlslivetiming.parser --cov=aionlslivetiming.events --cov-report=term-missing"
 
 [tool.coverage.run]
 source = ["aionlslivetiming"]
 omit = ["*/tests/*", "*/__main__.py"]
 
 [tool.coverage.report]
+fail_under = 80
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",

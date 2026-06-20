@@ -12,7 +12,7 @@ raises on a partial server payload (D-03).
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from aionlslivetiming.events.common import BestSector, CarResult, SessionInfo, TimeOfDay
 from aionlslivetiming.logging import get_logger
@@ -21,14 +21,14 @@ if TYPE_CHECKING:
     pass
 
 __all__ = [
-    "reset_warned",
-    "warn_missing",
+    "_best_sector",
+    "_car_result",
     "_opt_int",
     "_opt_str",
-    "_time_of_day",
     "_session_info",
-    "_car_result",
-    "_best_sector",
+    "_time_of_day",
+    "reset_warned",
+    "warn_missing",
 ]
 
 # Shared dedupe set (D-03). The ``(event_pid, field_name)`` tuple is the
@@ -61,7 +61,7 @@ def warn_missing(field_name: str, event_pid: int) -> None:
     logger.warning("missing field %r for eventPid=%d", field_name, event_pid)
 
 
-def _opt_int(v: Any) -> Optional[int]:
+def _opt_int(v: Any) -> int | None:
     """Return ``int(v)`` if *v* is not ``None``, else ``None``.
 
     Returns ``None`` on ``ValueError``/``TypeError`` so the parser never
@@ -75,7 +75,7 @@ def _opt_int(v: Any) -> Optional[int]:
         return None
 
 
-def _opt_str(v: Any) -> Optional[str]:
+def _opt_str(v: Any) -> str | None:
     """Return ``str(v)`` if *v* is not ``None``, else ``None``.
 
     Returns ``None`` on ``TypeError`` (D-03).
