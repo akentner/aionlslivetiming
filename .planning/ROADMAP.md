@@ -18,7 +18,7 @@ Build a bottom-up async-first Python client library for the Nürburgring Langstr
 **Depends on**: Nothing (first phase)
 **Requirements**: PARSE-01, PARSE-02, PARSE-03, PARSE-04, PARSE-05, DIST-02, DIST-03, DIST-06, DIST-07
 **Success Criteria** (what must be TRUE):
-  1. User can `pip install -e .` the package on Python 3.12+ and run `pytest` with parser tests passing against fixture JSONs — no live server or network required
+  1. User can `uv sync --extra dev` (per README.md canonical install command) on Python 3.12+ and run `uv run pytest` with parser tests passing against fixture JSONs — no live server or network required
   2. Calling `parse(raw_dict)` on any known short-code payload returns the corresponding typed Message dataclass (`InitialStateMessage`, `TrackStateMessage`, `RaceMessage`, `PerCarLapsMessage`, `QualifyingMessage`, `StatisticsMessage`, `TimeSyncMessage`, or `UnknownMessage`)
   3. Each Message is a frozen dataclass with explicit fields and a `.raw` attribute preserving the original server payload so unknown fields never cause a crash
   4. Unknown PIDs produce an `UnknownMessage` with the raw payload attached, logged at WARNING — the library never raises on unrecognized server schema
@@ -41,7 +41,12 @@ Plans:
   3. User can filter cached cars by class, starting number (single or list), driver name, position range, lap range, and sector-time threshold, and compose multiple filters with AND semantics
   4. `state.freshness` reports `FRESH` / `STALE` / `RESYNCING` and `source` reports `LIVE` / `REPLAY` / `IMPORTED`, and `state.clear()` resets all sub-caches
   5. User can export the state to JSON and re-import the same JSON to obtain a structurally equivalent state
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — state module skeleton + Source/Freshness enums + pydantic state models + idempotent RaceState.apply() + freshness/source/clear()
+- [ ] 02-02-PLAN.md — composable Filter DSL (class/starting_no/driver/position/lap/sector_time_lt) + AND composition + RaceState.filter() factory + convenience pass-throughs
+- [ ] 02-03-PLAN.md — JSON snapshot persistence (to_json / from_json / import_json) with schema_version tag + round-trip + idempotency-key preservation
 
 ### Phase 3: Transport + Replay
 **Goal**: A transport interface with three implementations (live WebSocket, JSONL replay, recording wrapper) plus the optional HTTP laps-data fallback — all feeding the same parser path so live and replay produce identical typed Messages.
@@ -73,7 +78,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation (Package + Parser) | 2/3 | In Progress|  |
-| 2. State + Filtering | 0/TBD | Not started | - |
+| 1. Foundation (Package + Parser) | 4/4 | Complete | 2026-06-20 |
+| 2. State + Filtering | 0/3 | Planned | - |
 | 3. Transport + Replay | 0/TBD | Not started | - |
 | 4. Client + Distribution | 0/TBD | Not started | - |
