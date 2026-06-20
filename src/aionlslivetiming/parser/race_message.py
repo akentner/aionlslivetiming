@@ -3,6 +3,15 @@
 Maps the NLS server's PID 3 payload (``text``, ``type``, ``startingNo``,
 ``session``) onto :class:`RaceMessage`. ``type`` is mapped to the
 ``category`` field; ``session`` is the race session id (e.g. ``"R1"``).
+
+.. note::
+
+   The SPA leaderboard also renders a per-car "State" column with short
+   codes (``PI``, ``F``, ``I1``-``I4``). Those are **not** PID 3
+   ``type`` values; they are attached to the car, not the track, and
+   live on a different field (likely PID 7 per-car or an unmodelled
+   PID). See ``.planning/research/PER_CAR_STATE_CODES.md`` for the
+   unverified mapping and a verification plan.
 """
 
 from __future__ import annotations
