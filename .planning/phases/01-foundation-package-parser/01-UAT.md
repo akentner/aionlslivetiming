@@ -1,9 +1,9 @@
 ---
-status: complete
+status: diagnosed
 phase: 01-foundation-package-parser
 source: 01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md
 started: 2026-06-20T17:50:00Z
-updated: 2026-06-20T18:05:00Z
+updated: 2026-06-20T18:10:00Z
 ---
 
 ## Current Test
@@ -20,9 +20,7 @@ severity: minor
 
 ### 2. py.typed PEP 561 marker
 expected: `src/aionlslivetiming/py.typed` ships in the installed package. Verifiable by checking the file exists in the installed location and contains the PEP 561 marker.
-result: issue
-reported: "src/aionlslivetiming/py.typed ist vorhanden, aber leer"
-severity: minor
+result: pass
 
 ### 3. JSONL logger CLI --help
 expected: `python -m aionlslivetiming.cli.jsonl_logger --help` prints argparse usage describing the live-capture interface (event ID arg, output path arg, optional URL override).
@@ -96,29 +94,42 @@ result: pass
 ## Summary
 
 total: 17
-passed: 6
-issues: 2
+passed: 7
+issues: 1
 pending: 0
 skipped: 9
 blocked: 0
 
 ## Gaps
 
-- truth: "Test instructions use `pip install -e \"[dev]\"`"
+- truth: "UAT test instructions use the project's canonical install command (`uv sync --extra dev`)"
   status: failed
   reason: "User reported: Wir haben kein pip, sondern uv. Es geht auch bestimmt mit uv, aber dann muss die Anweisung im Test überarbeitet werden"
   severity: minor
   test: 1
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
-- truth: "`src/aionlslivetiming/py.typed` contains the PEP 561 marker"
-  status: failed
-  reason: "User reported: src/aionlslivetiming/py.typed ist vorhanden, aber leer"
-  severity: minor
+  root_cause: "UAT Test 1 + Test 6 still use `pip install -e \"[dev]\"` / `uv pip install -e \"[dev]\"`, but README canonical form is `uv sync --extra dev`. User's system has no pip (CachyOS, uv-only)."
+  artifacts:
+    - path: ".planning/phases/01-foundation-package-parser/01-UAT.md"
+      issue: "Test 1 expected + Test 6 expected + Gaps truth reference outdated pip forms"
+    - path: "README.md"
+      issue: "Source of truth — uses `uv sync --extra dev`"
+  missing:
+    - "Update Test 1 expected to use `uv sync --extra dev`"
+    - "Update Test 6 expected to use `uv sync --extra dev --reinstall`"
+    - "Update Gaps section truth to reflect new wording"
+  debug_session: .planning/debug/uat-pip-instead-of-uv.md
+- truth: "`src/aionlslivetiming/py.typed` is the PEP 561 marker (existence + emptiness)"
+  status: passed
+  reason: "User reported: src/aionlslivetiming/py.typed ist vorhanden, aber leer — REINTERPRETED: 0-byte IS the canonical PEP 561 marker."
+  severity: cosmetic
   test: 2
-  root_cause: ""
-  artifacts: []
+  root_cause: "NOT A BUG. PEP 561 only requires the marker file to exist; emptiness is canonical (numpy, pydantic, requests all ship 0-byte py.typed). The project's own test (tests/test_smoke.py::test_py_typed_present line 64-66) explicitly asserts `read_text() == ''` with message 'py.typed must be empty'. The 01-01-PLAN.md line 157/273 also documented the empty form as the contract."
+  artifacts:
+    - path: "src/aionlslivetiming/py.typed"
+      issue: "Not wrong — canonical 0-byte PEP 561 marker"
+    - path: "tests/test_smoke.py"
+      issue: "Correctly asserts both existence and emptiness"
+    - path: "pyproject.toml"
+      issue: "Correctly force-includes via [tool.hatch.build.targets.wheel.force-include]"
   missing: []
-  debug_session: ""
+  debug_session: .planning/debug/py-typed-empty.md
