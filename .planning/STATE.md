@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-06-20T14:05:55.112Z"
+status: verifying
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-06-20T14:17:20.691Z"
 last_activity: 2026-06-20
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 
 Phase: 01 (Foundation (Package + Parser)) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-20
 
 Progress: [░░░░░░░░░░] 0%
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-foundation-package-parser P01 | 824s | 3 tasks | 16 files |
 | Phase 01 P02 | 6 | 2 tasks | 23 files |
+| Phase 01-foundation-package-parser P03 | 7min | 2 tasks | 24 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-package-parser]: Events layer is stdlib-only (@dataclass frozen+slots), no pydantic — D-01 dataclass-for-events / pydantic-for-state split is now enforced by the public surface
 - [Phase 01-foundation-package-parser]: TimeSyncMessage.event_pid = -1 sentinel so the parser dispatcher routes by type-discriminator instead of needing a separate code path
 - [Phase 01-foundation-package-parser]: 11 hand-crafted fixtures at tests/fixtures/messages/ are the D-08 public test contract — Plan 03 parser tests will load each fixture and assert the parsed Message shape
+- [Phase 01-foundation-package-parser]: match/case over eventPid in the public parse() dispatcher — structural pattern matching reads as an exhaustive dispatch table; type-discriminated time-sync branch matched BEFORE eventPid lookup (D-05)
+- [Phase 01-foundation-package-parser]: Single module-level _warned: set[tuple[int, str]] in parser/_helpers.py — shared dedupe set across all 8 per-PID parsers + dispatcher (D-03); autouse reset_warned() fixture in conftest.py for test independence
+- [Phase 01-foundation-package-parser]: Coverage addopts use dotted module names (aionlslivetiming.parser) rather than the old forward-slash form — the slashed form silently produced 0% because coverage could not discover the packages as namespaces
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T14:05:55.107Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-06-20T14:17:20.687Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None

@@ -18,10 +18,10 @@
 
 ### Parsing
 
-- [ ] **PARSE-01**: Library decodes all known short-code JSON keys (`PID`, `VER`, `EXPORTID`, `SESSION`, `CUP`, `HEAT`, `HEATTYPE`, `TRACKNAME`, `STQ`, `BEST`, `TOD`, `RESULT`, `TRACKSTATE`, `TIMESTATE`, `ENDTIME`, `LTS_NOT_FOUND`) into typed Python objects
+- [x] **PARSE-01**: Library decodes all known short-code JSON keys (`PID`, `VER`, `EXPORTID`, `SESSION`, `CUP`, `HEAT`, `HEATTYPE`, `TRACKNAME`, `STQ`, `BEST`, `TOD`, `RESULT`, `TRACKSTATE`, `TIMESTATE`, `ENDTIME`, `LTS_NOT_FOUND`) into typed Python objects
 - [x] **PARSE-02**: Library exposes 8 typed message classes (InitialState, TrackStateUpdate, RaceMessage, PerCarLaps, Qualifying, Statistics, TimeSync, UnknownMessage)
-- [ ] **PARSE-03**: Unknown or new server fields are preserved on the message's `.raw` attribute and never cause a crash
-- [ ] **PARSE-04**: Parser is pure (no I/O, no event-loop dependency) so it is unit-testable with fixture JSONs
+- [x] **PARSE-03**: Unknown or new server fields are preserved on the message's `.raw` attribute and never cause a crash
+- [x] **PARSE-04**: Parser is pure (no I/O, no event-loop dependency) so it is unit-testable with fixture JSONs
 - [x] **PARSE-05**: Each typed message is a frozen dataclass / pydantic model with explicit fields
 
 ### Cached State
@@ -73,7 +73,7 @@
 - [x] **DIST-03**: Library targets Python 3.12+ and documents that in the README
 - [ ] **DIST-04**: Library has zero HA-specific imports — usable as a generic Python package
 - [ ] **DIST-05**: Library provides a CLI entry point for `nls-record` and `nls-replay`
-- [ ] **DIST-06**: Library has ≥80% test coverage for the parser, state, and filter layers
+- [x] **DIST-06**: Library has ≥80% test coverage for the parser, state, and filter layers
 - [x] **DIST-07**: Library uses HA-pinned dependency versions (pydantic, httpx, websockets, orjson) to avoid version float
 
 ### Documentation & Community
@@ -144,10 +144,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONN-06 | Phase 3 | Pending |
 | CONN-07 | Phase 3 | Pending |
 | CONN-08 | Phase 3 | Pending |
-| PARSE-01 | Phase 1 | Pending |
+| PARSE-01 | Phase 1 | Complete |
 | PARSE-02 | Phase 1 | Complete |
-| PARSE-03 | Phase 1 | Pending |
-| PARSE-04 | Phase 1 | Pending |
+| PARSE-03 | Phase 1 | Complete |
+| PARSE-04 | Phase 1 | Complete |
 | PARSE-05 | Phase 1 | Complete |
 | STATE-01 | Phase 2 | Pending |
 | STATE-02 | Phase 2 | Pending |
@@ -181,7 +181,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DIST-03 | Phase 1 | Complete |
 | DIST-04 | Phase 4 | Pending |
 | DIST-05 | Phase 4 | Pending |
-| DIST-06 | Phase 1 | Pending |
+| DIST-06 | Phase 1 | Complete |
 | DIST-07 | Phase 1 | Complete |
 | DOC-01 | Phase 4 | Pending |
 | DOC-02 | Phase 4 | Pending |
