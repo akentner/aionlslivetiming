@@ -1,0 +1,12 @@
+{
+  "eventPid": 9002,
+  "LEADING": [
+    {"startingNo": 7, "position": 1, "class": "SP9", "driver": "M. Müller", "laps": 28, "best": 162340}
+  ],
+  "BEST_LAPS": [
+    {"startingNo": 7, "position": 1, "class": "SP9", "driver": "M. Müller", "laps": 28, "best": 162340}
+  ],
+  "BEST_SECTORS": [
+    {"startingNo": 11, "sector": 1, "value": 31800, "driver": "F. Schmidt"}
+  ]
+}

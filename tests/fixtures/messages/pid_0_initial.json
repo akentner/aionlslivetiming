@@ -1,0 +1,19 @@
+{
+  "PID": 12345,
+  "VER": "1.0",
+  "EXPORTID": "abc-123",
+  "TRACKNAME": "Nürburgring Nordschleife",
+  "SESSION": "R1",
+  "CUP": "NLS",
+  "HEAT": "1",
+  "HEATTYPE": "R",
+  "STQ": "60",
+  "BEST": [
+    {"startingNo": 7, "sector": 1, "value": 32150, "driver": "M. Müller"},
+    {"startingNo": 7, "sector": 2, "value": 58720, "driver": "M. Müller"}
+  ],
+  "RESULT": [
+    {"startingNo": 7, "position": 1, "class": "SP9", "driver": "M. Müller", "laps": 28, "totalTime": 7200000, "gap": 0, "best": 162340},
+    {"startingNo": 11, "position": 2, "class": "SP9", "driver": "F. Schmidt", "laps": 28, "totalTime": 7205421, "gap": 5421, "best": 162890}
+  ]
+}
