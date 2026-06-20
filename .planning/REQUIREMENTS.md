@@ -26,11 +26,11 @@
 
 ### Cached State
 
-- [ ] **STATE-01**: Library maintains a queryable `RaceState` (current standings, per-car lap history, sector times, race messages, qualifying, statistics)
-- [ ] **STATE-02**: State is updated by a single-writer task (the message reader) and read by many consumers — no locks
-- [ ] **STATE-03**: `RaceState.apply(message)` is idempotent: applying the same message twice produces the same state
-- [ ] **STATE-04**: State exposes a `freshness` indicator (time of last update, source = live/replay/imported)
-- [ ] **STATE-05**: User can clear the cache on demand (resets all sub-caches)
+- [x] **STATE-01**: Library maintains a queryable `RaceState` (current standings, per-car lap history, sector times, race messages, qualifying, statistics)
+- [x] **STATE-02**: State is updated by a single-writer task (the message reader) and read by many consumers — no locks
+- [x] **STATE-03**: `RaceState.apply(message)` is idempotent: applying the same message twice produces the same state
+- [x] **STATE-04**: State exposes a `freshness` indicator (time of last update, source = live/replay/imported)
+- [x] **STATE-05**: User can clear the cache on demand (resets all sub-caches)
 - [ ] **STATE-06**: User can export the state to JSON
 - [ ] **STATE-07**: User can import a state from JSON (replaces current state)
 
@@ -149,11 +149,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PARSE-03 | Phase 1 | Complete |
 | PARSE-04 | Phase 1 | Complete |
 | PARSE-05 | Phase 1 | Complete |
-| STATE-01 | Phase 2 | Pending |
-| STATE-02 | Phase 2 | Pending |
-| STATE-03 | Phase 2 | Pending |
-| STATE-04 | Phase 2 | Pending |
-| STATE-05 | Phase 2 | Pending |
+| STATE-01 | Phase 2 | Complete |
+| STATE-02 | Phase 2 | Complete |
+| STATE-03 | Phase 2 | Complete |
+| STATE-04 | Phase 2 | Complete |
+| STATE-05 | Phase 2 | Complete |
 | STATE-06 | Phase 2 | Pending |
 | STATE-07 | Phase 2 | Pending |
 | FILT-01 | Phase 2 | Pending |

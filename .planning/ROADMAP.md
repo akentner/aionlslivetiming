@@ -44,7 +44,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — state module skeleton + Source/Freshness enums + pydantic state models + idempotent RaceState.apply() + freshness/source/clear()
+- [x] 02-01-PLAN.md — state module skeleton + Source/Freshness enums + pydantic state models + idempotent RaceState.apply() + freshness/source/clear()
 - [ ] 02-02-PLAN.md — composable Filter DSL (class/starting_no/driver/position/lap/sector_time_lt) + AND composition + RaceState.filter() factory + convenience pass-throughs
 - [ ] 02-03-PLAN.md — JSON snapshot persistence (to_json / from_json / import_json) with schema_version tag + round-trip + idempotency-key preservation
 
