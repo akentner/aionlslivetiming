@@ -13,7 +13,7 @@ something to discriminate on.
 from __future__ import annotations
 
 from aionlslivetiming import Filter, RaceState
-from aionlslivetiming.events import InitialStateMessage, SessionInfo, CarResult
+from aionlslivetiming.events import CarResult, InitialStateMessage, SessionInfo
 from aionlslivetiming.state.car import CarState
 
 
@@ -85,8 +85,8 @@ def make_race_state() -> RaceState:
     )
     s.apply(msg)
     # Inject sector bests for FILT-06 test (InitialStateMessage has no sector_bests on cars)
-    s._cars[7].sector_bests[1] = 32150  # noqa: SLF001 - test-internal mutation
-    s._cars[7].sector_bests[2] = 58720  # noqa: SLF001
+    s._cars[7].sector_bests[1] = 32150
+    s._cars[7].sector_bests[2] = 58720
     s._cars[11].sector_bests[1] = 33000
     s._cars[22].sector_bests[1] = 33500
     s._cars[44].sector_bests[1] = 35100
@@ -209,10 +209,10 @@ def test_by_driver_substring_with_umlaut_via_ascii_fallback() -> None:
 
 
 def test_by_driver_substring_partial() -> None:
-    """Substring 'er' matches Weber, Bauer, Fischer, Klein (4 of 6)."""
+    """Substring 'er' matches Mueller, Weber, Bauer, Fischer (4 of 6)."""
     s = make_race_state()
     cars = s.filter().by_driver("er").cars()
-    assert starting_nos(cars) == [22, 44, 55, 66]
+    assert starting_nos(cars) == [7, 22, 44, 55]
 
 
 def test_by_driver_no_match_returns_empty() -> None:
@@ -225,7 +225,7 @@ def test_by_driver_skips_cars_without_driver() -> None:
     """A car with driver=None is excluded from by_driver results."""
     s = make_race_state()
     # Clear driver on car 7
-    s._cars[7].driver = None  # noqa: SLF001
+    s._cars[7].driver = None
     cars = s.filter().by_driver("Mueller").cars()
     assert cars == []
 
@@ -270,7 +270,7 @@ def test_by_position_unknown_position_excluded_by_default() -> None:
     """A 7th car with position=None is excluded when no filter is set."""
     s = make_race_state()
     # Inject an unknown-position car
-    s._cars[77] = CarState(  # noqa: SLF001
+    s._cars[77] = CarState(
         starting_no=77,
         position=None,
         class_name="SP9",
@@ -285,7 +285,7 @@ def test_by_position_unknown_position_excluded_by_default() -> None:
 def test_by_position_include_unknown_via_opt_in() -> None:
     """include_unknown_position() includes None-position cars in the result."""
     s = make_race_state()
-    s._cars[77] = CarState(  # noqa: SLF001
+    s._cars[77] = CarState(
         starting_no=77,
         position=None,
         class_name="SP9",
@@ -323,13 +323,25 @@ def test_by_lap_range() -> None:
     assert starting_nos(cars) == [22, 44, 55]
 
 
-def test_by_lap_excludes_unknown_laps() -> None:
-    """A car with laps_completed=0 (not yet started) is included in by_lap(min=0)."""
+def test_by_lap_filters_by_laps_completed_only() -> None:
+    """by_lap(min=N) keeps all cars with laps_completed >= N, regardless of position.
+
+    Car 88 has laps_completed=15 and a real position (7) so the
+    position filter does not exclude it. by_lap(min=10) should
+    include it alongside the fixture cars (all > 25 laps).
+    """
     s = make_race_state()
-    s._cars[88] = CarState(starting_no=88, position=None, class_name="SP9", driver="X")  # noqa: SLF001
-    cars = s.filter().by_lap(min=0).cars()
-    # 88 has laps_completed=0 (default), so by_lap(min=0) should include it
+    s._cars[88] = CarState(
+        starting_no=88,
+        position=7,
+        class_name="SP9",
+        driver="X",
+        laps_completed=15,
+    )
+    cars = s.filter().by_lap(min=10).cars()
     assert 88 in starting_nos(cars)
+    # All 6 fixture cars have laps_completed >= 25, so they are also included
+    assert len(cars) == 7
 
 
 # ---------------------------------------------------------------------------

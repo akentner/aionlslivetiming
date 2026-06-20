@@ -26,7 +26,7 @@ no asyncio — consumers read in the same task they write.
 from __future__ import annotations
 
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from aionlslivetiming.events import (
     InitialStateMessage,
@@ -40,6 +40,11 @@ from aionlslivetiming.state.car import CarState
 from aionlslivetiming.state.enums import Freshness, Source
 from aionlslivetiming.state.lap import LapRecord
 from aionlslivetiming.state.track import TrackState
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from aionlslivetiming.state.filter import Filter
 
 
 class RaceState:
@@ -148,6 +153,34 @@ class RaceState:
             self._cars.values(),
             key=lambda c: (c.position is None, c.position if c.position is not None else 0),
         )
+
+    # -------------------------------------------------------------- filter DSL
+    def filter(self) -> Filter:
+        """Return a composable Filter over this state's cars.
+
+        Builder-pattern API for queries — each method narrows the
+        working set, and ``.cars()`` materialises the result. See
+        :class:`~aionlslivetiming.state.filter.Filter` for the full
+        DSL.
+        """
+        # Local import to avoid a circular dependency: filter.py
+        # imports ``RaceState`` under TYPE_CHECKING only, but the
+        # runtime path keeps the dependency direction clean.
+        from aionlslivetiming.state.filter import Filter
+
+        return Filter(self)
+
+    def cars_by_class(self, class_name: str) -> list[CarState]:
+        """Convenience pass-through: all cars whose ``class_name == class_name``."""
+        return self.filter().by_class(class_name).cars()
+
+    def cars_by_starting_no(self, value: int | Iterable[int]) -> list[CarState]:
+        """Convenience pass-through: cars whose ``starting_no`` is in ``value``."""
+        return self.filter().by_starting_no(value).cars()
+
+    def top(self, n: int) -> list[CarState]:
+        """Convenience pass-through: top ``n`` cars by position."""
+        return self.filter().top(n).cars()
 
     # -------------------------------------------------------------- mutators
     def set_source(self, source: Source) -> None:
