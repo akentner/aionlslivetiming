@@ -136,21 +136,70 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONN-01..08 | TBD | Pending |
-| PARSE-01..05 | TBD | Pending |
-| STATE-01..07 | TBD | Pending |
-| FILT-01..07 | TBD | Pending |
-| STREAM-01..04 | TBD | Pending |
-| REC-01..06 | TBD | Pending |
-| HTTP-01..03 | TBD | Pending |
-| DIST-01..07 | TBD | Pending |
-| DOC-01..05 | TBD | Pending |
+| CONN-01 | Phase 3 | Pending |
+| CONN-02 | Phase 3 | Pending |
+| CONN-03 | Phase 3 | Pending |
+| CONN-04 | Phase 3 | Pending |
+| CONN-05 | Phase 3 | Pending |
+| CONN-06 | Phase 3 | Pending |
+| CONN-07 | Phase 3 | Pending |
+| CONN-08 | Phase 3 | Pending |
+| PARSE-01 | Phase 1 | Pending |
+| PARSE-02 | Phase 1 | Pending |
+| PARSE-03 | Phase 1 | Pending |
+| PARSE-04 | Phase 1 | Pending |
+| PARSE-05 | Phase 1 | Pending |
+| STATE-01 | Phase 2 | Pending |
+| STATE-02 | Phase 2 | Pending |
+| STATE-03 | Phase 2 | Pending |
+| STATE-04 | Phase 2 | Pending |
+| STATE-05 | Phase 2 | Pending |
+| STATE-06 | Phase 2 | Pending |
+| STATE-07 | Phase 2 | Pending |
+| FILT-01 | Phase 2 | Pending |
+| FILT-02 | Phase 2 | Pending |
+| FILT-03 | Phase 2 | Pending |
+| FILT-04 | Phase 2 | Pending |
+| FILT-05 | Phase 2 | Pending |
+| FILT-06 | Phase 2 | Pending |
+| FILT-07 | Phase 2 | Pending |
+| STREAM-01 | Phase 3 | Pending |
+| STREAM-02 | Phase 3 | Pending |
+| STREAM-03 | Phase 3 | Pending |
+| STREAM-04 | Phase 3 | Pending |
+| REC-01 | Phase 3 | Pending |
+| REC-02 | Phase 3 | Pending |
+| REC-03 | Phase 3 | Pending |
+| REC-04 | Phase 3 | Pending |
+| REC-05 | Phase 3 | Pending |
+| REC-06 | Phase 3 | Pending |
+| HTTP-01 | Phase 3 | Pending |
+| HTTP-02 | Phase 3 | Pending |
+| HTTP-03 | Phase 3 | Pending |
+| DIST-01 | Phase 4 | Pending |
+| DIST-02 | Phase 1 | Pending |
+| DIST-03 | Phase 1 | Pending |
+| DIST-04 | Phase 4 | Pending |
+| DIST-05 | Phase 4 | Pending |
+| DIST-06 | Phase 1 | Pending |
+| DIST-07 | Phase 1 | Pending |
+| DOC-01 | Phase 4 | Pending |
+| DOC-02 | Phase 4 | Pending |
+| DOC-03 | Phase 4 | Pending |
+| DOC-04 | Phase 4 | Pending |
+| DOC-05 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 41 total
-- Mapped to phases: 0 ⚠️ (filled by roadmap)
-- Unmapped: 41 ⚠️
+- v1 requirements: 52 total
+- Mapped to phases: 52 ✓
+- Unmapped: 0
+
+**Coverage by phase:**
+- Phase 1 (Foundation): 9 requirements (PARSE-01..05, DIST-02, DIST-03, DIST-06, DIST-07)
+- Phase 2 (State + Filtering): 14 requirements (STATE-01..07, FILT-01..07)
+- Phase 3 (Transport + Replay): 21 requirements (CONN-01..08, STREAM-01..04, REC-01..06, HTTP-01..03)
+- Phase 4 (Client + Distribution): 8 requirements (DIST-01, DIST-04, DIST-05, DOC-01..05)
 
 ---
 *Requirements defined: 2026-06-20*
-*Last updated: 2026-06-20 after initial definition*
+*Last updated: 2026-06-20 after roadmap creation*
