@@ -12,7 +12,11 @@ Downstream Python projects can subscribe to a running NLS race and get typed, fi
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Maintain a queryable cached state (current standings, per-car lap history, sector times, race messages, qualifying, statistics) — *Phase 02 (STATE-01..05)*
+- [x] Filter the cached state by car class, starting number, driver, position range, lap range, and sector time — *Phase 02 (FILT-01..07)*
+- [x] Clear and reset the in-memory cache on demand — *Phase 02 (STATE-05)*
+- [x] Export the cached state and the recorded log to JSON / JSONL — *Phase 02 (STATE-06)*
+- [x] Import state and logs from JSON / JSONL — *Phase 02 (STATE-07)*
 
 ### Active
 
