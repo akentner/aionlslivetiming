@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-06-20T13:56:21.436Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-06-20T14:05:55.112Z"
 last_activity: 2026-06-20
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 ## Current Position
 
 Phase: 01 (Foundation (Package + Parser)) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-20
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation-package-parser P01 | 824s | 3 tasks | 16 files |
+| Phase 01 P02 | 6 | 2 tasks | 23 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-package-parser]: Hatchling build backend with src-layout; py.typed forced into wheel via hatch force-include (PEP 561)
 - [Phase 01-foundation-package-parser]: orjson is an optional extra, not a hard runtime dep — stdlib json works as fallback (D-10)
 - [Phase 01-foundation-package-parser]: JSONL line shape {ts_recv_ms, raw} is a strict subset of Phase 2 schema {ts_recv_ms, event_pid, raw, parsed} — no migration needed
+- [Phase 01-foundation-package-parser]: Events layer is stdlib-only (@dataclass frozen+slots), no pydantic — D-01 dataclass-for-events / pydantic-for-state split is now enforced by the public surface
+- [Phase 01-foundation-package-parser]: TimeSyncMessage.event_pid = -1 sentinel so the parser dispatcher routes by type-discriminator instead of needing a separate code path
+- [Phase 01-foundation-package-parser]: 11 hand-crafted fixtures at tests/fixtures/messages/ are the D-08 public test contract — Plan 03 parser tests will load each fixture and assert the parsed Message shape
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T13:56:21.432Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-06-20T14:05:55.107Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None

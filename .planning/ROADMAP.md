@@ -28,7 +28,7 @@ Build a bottom-up async-first Python client library for the Nürburgring Langstr
 
 Plans:
 - [x] 01-01-PLAN.md — Package skeleton (hatchling, src layout, py.typed, HA-pinned deps) + D-07 JSONL logger CLI
-- [ ] 01-02-PLAN.md — 8 frozen Message dataclasses + 10 hand-crafted fixture JSONs (D-08) + dataclass unit tests
+- [x] 01-02-PLAN.md — 8 frozen Message dataclasses + 10 hand-crafted fixture JSONs (D-08) + dataclass unit tests
 - [ ] 01-03-PLAN.md — 8 per-PID parsers + `parse()` dispatcher (match/case) + per-PID unit tests + log-dedupe + ≥80% coverage gate
 
 ### Phase 2: State + Filtering
@@ -73,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation (Package + Parser) | 0/TBD | Not started | - |
+| 1. Foundation (Package + Parser) | 2/3 | In Progress|  |
 | 2. State + Filtering | 0/TBD | Not started | - |
 | 3. Transport + Replay | 0/TBD | Not started | - |
 | 4. Client + Distribution | 0/TBD | Not started | - |

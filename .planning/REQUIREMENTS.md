@@ -19,10 +19,10 @@
 ### Parsing
 
 - [ ] **PARSE-01**: Library decodes all known short-code JSON keys (`PID`, `VER`, `EXPORTID`, `SESSION`, `CUP`, `HEAT`, `HEATTYPE`, `TRACKNAME`, `STQ`, `BEST`, `TOD`, `RESULT`, `TRACKSTATE`, `TIMESTATE`, `ENDTIME`, `LTS_NOT_FOUND`) into typed Python objects
-- [ ] **PARSE-02**: Library exposes 8 typed message classes (InitialState, TrackStateUpdate, RaceMessage, PerCarLaps, Qualifying, Statistics, TimeSync, UnknownMessage)
+- [x] **PARSE-02**: Library exposes 8 typed message classes (InitialState, TrackStateUpdate, RaceMessage, PerCarLaps, Qualifying, Statistics, TimeSync, UnknownMessage)
 - [ ] **PARSE-03**: Unknown or new server fields are preserved on the message's `.raw` attribute and never cause a crash
 - [ ] **PARSE-04**: Parser is pure (no I/O, no event-loop dependency) so it is unit-testable with fixture JSONs
-- [ ] **PARSE-05**: Each typed message is a frozen dataclass / pydantic model with explicit fields
+- [x] **PARSE-05**: Each typed message is a frozen dataclass / pydantic model with explicit fields
 
 ### Cached State
 
@@ -145,10 +145,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONN-07 | Phase 3 | Pending |
 | CONN-08 | Phase 3 | Pending |
 | PARSE-01 | Phase 1 | Pending |
-| PARSE-02 | Phase 1 | Pending |
+| PARSE-02 | Phase 1 | Complete |
 | PARSE-03 | Phase 1 | Pending |
 | PARSE-04 | Phase 1 | Pending |
-| PARSE-05 | Phase 1 | Pending |
+| PARSE-05 | Phase 1 | Complete |
 | STATE-01 | Phase 2 | Pending |
 | STATE-02 | Phase 2 | Pending |
 | STATE-03 | Phase 2 | Pending |
