@@ -69,12 +69,12 @@
 ### Distribution & Ergonomics
 
 - [ ] **DIST-01**: Library is published to PyPI as `aionlslivetiming`
-- [ ] **DIST-02**: Library uses `py.typed` (PEP 561) and ships type hints
-- [ ] **DIST-03**: Library targets Python 3.12+ and documents that in the README
+- [x] **DIST-02**: Library uses `py.typed` (PEP 561) and ships type hints
+- [x] **DIST-03**: Library targets Python 3.12+ and documents that in the README
 - [ ] **DIST-04**: Library has zero HA-specific imports — usable as a generic Python package
 - [ ] **DIST-05**: Library provides a CLI entry point for `nls-record` and `nls-replay`
 - [ ] **DIST-06**: Library has ≥80% test coverage for the parser, state, and filter layers
-- [ ] **DIST-07**: Library uses HA-pinned dependency versions (pydantic, httpx, websockets, orjson) to avoid version float
+- [x] **DIST-07**: Library uses HA-pinned dependency versions (pydantic, httpx, websockets, orjson) to avoid version float
 
 ### Documentation & Community
 
@@ -177,12 +177,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HTTP-02 | Phase 3 | Pending |
 | HTTP-03 | Phase 3 | Pending |
 | DIST-01 | Phase 4 | Pending |
-| DIST-02 | Phase 1 | Pending |
-| DIST-03 | Phase 1 | Pending |
+| DIST-02 | Phase 1 | Complete |
+| DIST-03 | Phase 1 | Complete |
 | DIST-04 | Phase 4 | Pending |
 | DIST-05 | Phase 4 | Pending |
 | DIST-06 | Phase 1 | Pending |
-| DIST-07 | Phase 1 | Pending |
+| DIST-07 | Phase 1 | Complete |
 | DOC-01 | Phase 4 | Pending |
 | DOC-02 | Phase 4 | Pending |
 | DOC-03 | Phase 4 | Pending |

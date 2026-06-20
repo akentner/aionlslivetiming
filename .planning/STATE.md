@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-06-20T13:41:25.961Z"
-last_activity: 2026-06-20 -- Phase 01 execution started
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-06-20T13:56:21.436Z"
+last_activity: 2026-06-20
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 ## Current Position
 
 Phase: 01 (Foundation (Package + Parser)) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 01
-Last activity: 2026-06-20 -- Phase 01 execution started
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-06-20
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-foundation-package-parser P01 | 824s | 3 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - Roadmap structure: 4 phases (coarse granularity) collapsing the 10-step ARCHITECTURE.md build order into Foundation → State → Transport → Client+Distribution
 - Phase 1 owns DIST-02/03/06/07 (packaging + dep pins + coverage gates) alongside PARSE-* because the package skeleton and the parser share the same src-layout scaffolding
 - Phase 3 owns all of CONN + STREAM + REC + HTTP together — the Transport Protocol and its three implementations (Live / Replay / Recording wrapper) form one inseparable design unit, and splitting them would split the live-vs-replay parity guarantee
+- [Phase 01-foundation-package-parser]: Hatchling build backend with src-layout; py.typed forced into wheel via hatch force-include (PEP 561)
+- [Phase 01-foundation-package-parser]: orjson is an optional extra, not a hard runtime dep — stdlib json works as fallback (D-10)
+- [Phase 01-foundation-package-parser]: JSONL line shape {ts_recv_ms, raw} is a strict subset of Phase 2 schema {ts_recv_ms, event_pid, raw, parsed} — no migration needed
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T13:13:41.678Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation-package-parser/01-CONTEXT.md
+Last session: 2026-06-20T13:56:21.432Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
