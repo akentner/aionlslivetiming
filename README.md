@@ -41,6 +41,26 @@ uv run mypy --strict src
 uv run pytest --cov=aionlslivetiming --cov-report=term-missing
 ```
 
+### Live capture (D-07)
+
+Capture raw WebSocket frames from the NLS livetiming service into a
+JSONL file. Useful for grabbing fresh fixture material during an
+active race.
+
+```bash
+# Via the installed console script (preferred — short and tab-completeable)
+uv run aionlslivetiming-capture 20 /tmp/nls_event20.jsonl --max-seconds 30
+
+# Via the long module path (equivalent)
+uv run python -m aionlslivetiming.cli.jsonl_logger 20 /tmp/nls_event20.jsonl --max-seconds 30
+
+# Via the wrapper (delegates to uv run)
+./scripts/capture.sh 20 /tmp/nls_event20.jsonl --max-seconds 30
+```
+
+See `uv run aionlslivetiming-capture --help` for all options
+(`--host`, `--channels`, `--max-seconds`).
+
 ### Why no Taskfile / Makefile / Hatch scripts?
 
 For a single-language Python library, uv + `pyproject.toml` is enough:

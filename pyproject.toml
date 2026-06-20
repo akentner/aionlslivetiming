@@ -51,6 +51,9 @@ dev = [
 Repository = "https://github.com/akentner/aionlslivetiming"
 Issues = "https://github.com/akentner/aionlslivetiming/issues"
 
+[project.scripts]
+aionlslivetiming-capture = "aionlslivetiming.cli.jsonl_logger:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/aionlslivetiming"]
 
