@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-06-20T17:32:44.338Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-06-20T17:41:35.740Z"
 last_activity: 2026-06-20
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 ## Current Position
 
 Phase: 02 (state-filtering) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-20
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P02 | 6 | 2 tasks | 23 files |
 | Phase 01-foundation-package-parser P03 | 7min | 2 tasks | 24 files |
 | Phase 02-state-filtering P01 | 360 | 1 tasks | 11 files |
+| Phase 02-state-filtering P02 | 380 | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,8 @@ Recent decisions affecting current work:
 - [Phase 02-state-filtering]: RaceState.cars / stats_best_sectors return defensive dict copies; messages/qualifying are immutable tuples (no copy needed)
 - [Phase 02-state-filtering]: Freshness defaults to RESYNCING (not FRESH) so a fresh RaceState() is honest about being empty; transitions to FRESH on first apply()
 - [Phase 02-state-filtering]: Per-type idempotency strategies: PID 0 = full cars dict reset; PID 4 = replace TrackState instance; PID 3 = dedupe on (text, category, starting_no, session); PID 7 = keyed by (session, starting_no, lap_no) last-write-wins; PID 501 = replace results tuple; PID 9002 = keep min per (starting_no, sector)
+- [Phase 02-state-filtering]: Filter DSL: AND across dimensions, OR within driver substrings; list (not generator) return type per ARCHITECTURE.md line 161; both builder pattern (state.filter().by_class('SP9').top(5).cars()) and method-on-cache (state.cars_by_class('SP9')) exposed
+- [Phase 02-state-filtering]: FILT-01..07 design decisions: by_class/by_starting_no use set union (idempotent); by_driver case-insensitive substring (D-FILT-2) with OR across multiple substrings; by_position/by_lap inclusive bounds with unknown-position excluded by default; sector_time_lt strict less-than on per-car sector_bests
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T17:32:44.334Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-06-20T17:41:35.737Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

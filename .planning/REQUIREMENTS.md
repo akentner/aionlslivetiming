@@ -36,13 +36,13 @@
 
 ### Filtering
 
-- [ ] **FILT-01**: User can filter cars by class (car class name)
-- [ ] **FILT-02**: User can filter by starting number (single value or list)
-- [ ] **FILT-03**: User can filter by driver name
-- [ ] **FILT-04**: User can filter by position range (e.g., top 5)
-- [ ] **FILT-05**: User can filter by lap range (e.g., last 10 laps)
-- [ ] **FILT-06**: User can filter by sector time threshold (cars faster than X)
-- [ ] **FILT-07**: Filter API is composable (multiple filters combine with AND)
+- [x] **FILT-01**: User can filter cars by class (car class name)
+- [x] **FILT-02**: User can filter by starting number (single value or list)
+- [x] **FILT-03**: User can filter by driver name
+- [x] **FILT-04**: User can filter by position range (e.g., top 5)
+- [x] **FILT-05**: User can filter by lap range (e.g., last 10 laps)
+- [x] **FILT-06**: User can filter by sector time threshold (cars faster than X)
+- [x] **FILT-07**: Filter API is composable (multiple filters combine with AND)
 
 ### Live Event Stream
 
@@ -156,13 +156,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STATE-05 | Phase 2 | Complete |
 | STATE-06 | Phase 2 | Pending |
 | STATE-07 | Phase 2 | Pending |
-| FILT-01 | Phase 2 | Pending |
-| FILT-02 | Phase 2 | Pending |
-| FILT-03 | Phase 2 | Pending |
-| FILT-04 | Phase 2 | Pending |
-| FILT-05 | Phase 2 | Pending |
-| FILT-06 | Phase 2 | Pending |
-| FILT-07 | Phase 2 | Pending |
+| FILT-01 | Phase 2 | Complete |
+| FILT-02 | Phase 2 | Complete |
+| FILT-03 | Phase 2 | Complete |
+| FILT-04 | Phase 2 | Complete |
+| FILT-05 | Phase 2 | Complete |
+| FILT-06 | Phase 2 | Complete |
+| FILT-07 | Phase 2 | Complete |
 | STREAM-01 | Phase 3 | Pending |
 | STREAM-02 | Phase 3 | Pending |
 | STREAM-03 | Phase 3 | Pending |
