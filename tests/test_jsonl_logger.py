@@ -40,9 +40,9 @@ class _FakeWebSocket:
         self.sent.append(data)
 
     async def recv(self) -> bytes:
-        # Pre-configured exceptions are raised *after* the queued frames are
-        # exhausted, so tests that want "deliver N frames then crash" can
-        # pass a single recv_exc alongside N frames.
+        # Mirrors ``websockets.WebSocketClientProtocol.recv()`` (no
+        # ``timeout`` kwarg — that is ``asyncio.wait_for``'s job). The fake
+        # does not actually wait; it just returns pre-queued frames.
         if self._frames:
             return self._frames.pop(0)
         if self._recv_exc is not None and not self._exc_raised:
@@ -154,6 +154,52 @@ async def test_run_handles_keyboard_interrupt(tmp_path: pathlib.Path) -> None:
 
     assert rc == 0
     assert out.exists()
+
+
+async def test_run_respects_max_seconds_when_server_quiet(tmp_path: pathlib.Path) -> None:
+    """``max_seconds`` must fire even if the server sends no further frames.
+
+    The CLI must not block on ``recv()`` past the deadline. A fake WS whose
+    ``recv()`` sleeps until cancelled (mimicking a quiet server whose
+    underlying transport never produces a frame) lets us assert that
+    ``run`` returns 0 within the deadline.
+    """
+
+    import asyncio as _asyncio
+
+    class _QuietWebSocket(_FakeWebSocket):
+        """Fake WS whose recv() awaits forever — only cancellation unblocks it."""
+
+        def __init__(self) -> None:
+            super().__init__([])
+            self._call_count = 0
+
+        async def recv(self) -> bytes:  # type: ignore[override]
+            self._call_count += 1
+            await _asyncio.sleep(60)  # never reached; cancelled by wait_for
+            return b""  # pragma: no cover
+
+    ws = _QuietWebSocket()
+    out = tmp_path / "out.jsonl"
+
+    import time as _time
+
+    started = _time.monotonic()
+    rc = await jsonl_logger.run(
+        event_id="ev",
+        output_path=out,
+        max_seconds=0.2,
+        websockets_factory=_make_factory(ws),
+    )
+    elapsed = _time.monotonic() - started
+
+    assert rc == 0
+    assert out.exists()
+    # Must not run significantly past the deadline. Allow 2x slack for
+    # scheduler jitter on slow CI machines.
+    assert elapsed < 1.0, f"run took {elapsed:.2f}s, expected < 1.0s"
+    # recv() should have been called at least once before we exited.
+    assert ws._call_count >= 1
 
 
 # -- main() tests ------------------------------------------------------------------

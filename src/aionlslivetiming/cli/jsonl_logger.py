@@ -164,7 +164,28 @@ async def run(
                             _log.info("max_seconds reached, stopping")
                             return 0
 
-                        raw = await ws.recv()
+                        # Race ``recv()`` against the remaining deadline so a
+                        # quiet server does not block the CLI past ``max_seconds``.
+                        # We use ``asyncio.wait_for`` because the ``websockets``
+                        # library's ``recv()`` does not accept a ``timeout``
+                        # kwarg (the deadline-aware pattern is ``wait_for``).
+                        recv_timeout = (
+                            max(0.0, deadline - time.monotonic())
+                            if deadline is not None
+                            else None
+                        )
+                        try:
+                            if recv_timeout is not None:
+                                raw = await asyncio.wait_for(ws.recv(), timeout=recv_timeout)
+                            else:
+                                raw = await ws.recv()
+                        except TimeoutError:
+                            if deadline is not None and time.monotonic() >= deadline:
+                                _log.info("max_seconds reached, stopping")
+                                return 0
+                            # Spurious timeout from underlying transport —
+                            # loop and let the deadline check decide.
+                            continue
                         payload = _json_loads(raw)
                         line = {
                             "ts_recv_ms": int(time.time() * 1000),
