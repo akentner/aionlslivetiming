@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 01-foundation-package-parser
 source: 01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md
 started: 2026-06-20T17:50:00Z
-updated: 2026-06-20T18:10:00Z
+updated: 2026-06-20T18:35:00Z
 ---
 
 ## Current Test
@@ -13,10 +13,8 @@ updated: 2026-06-20T18:10:00Z
 ## Tests
 
 ### 1. Package install + import + version
-expected: `import aionlslivetiming` works; `aionlslivetiming.__version__ == "0.1.0"`; 6 channel ID constants importable from `aionlslivetiming.parser` with values {0, 3, 4, 7, 501, 9002}.
-result: issue
-reported: "Wir haben kein pip, sondern uv. Es geht auch bestimmt mit uv, aber dann muss die Anweisung im Test überarbeitet werden"
-severity: minor
+expected: After running `uv sync --extra dev` (README.md canonical install command), `import aionlslivetiming` works; `aionlslivetiming.__version__ == "0.1.0"`; 6 channel ID constants importable from `aionlslivetiming.parser` with values {0, 3, 4, 7, 501, 9002}.
+result: pass
 
 ### 2. py.typed PEP 561 marker
 expected: `src/aionlslivetiming/py.typed` ships in the installed package. Verifiable by checking the file exists in the installed location and contains the PEP 561 marker.
@@ -35,7 +33,7 @@ expected: `ruff check src tests` returns no errors. `mypy --strict src` returns 
 result: pass
 
 ### 6. Cold Start Smoke Test
-expected: Kill any running test process. Clear `.coverage` and `__pycache__` directories. Run `uv pip install -e ".[dev]" --force-reinstall` (or equivalent fresh install). Run `pytest` from scratch — package boots, all tests execute, coverage gate passes. No import errors, no missing dependencies, no stale cache issues.
+expected: Kill any running test process. Clear `.coverage` and `__pycache__` directories. Run `uv sync --extra dev --reinstall` (README.md canonical install command, fresh install). Run `pytest` from scratch — package boots, all tests execute, coverage gate passes. No import errors, no missing dependencies, no stale cache issues.
 result: pass
 
 ### 7. 8 Message dataclasses importable from events
@@ -94,30 +92,14 @@ result: pass
 ## Summary
 
 total: 17
-passed: 7
-issues: 1
+passed: 8
+issues: 0
 pending: 0
 skipped: 9
 blocked: 0
 
 ## Gaps
 
-- truth: "UAT test instructions use the project's canonical install command (`uv sync --extra dev`)"
-  status: failed
-  reason: "User reported: Wir haben kein pip, sondern uv. Es geht auch bestimmt mit uv, aber dann muss die Anweisung im Test überarbeitet werden"
-  severity: minor
-  test: 1
-  root_cause: "UAT Test 1 + Test 6 still use `pip install -e \"[dev]\"` / `uv pip install -e \"[dev]\"`, but README canonical form is `uv sync --extra dev`. User's system has no pip (CachyOS, uv-only)."
-  artifacts:
-    - path: ".planning/phases/01-foundation-package-parser/01-UAT.md"
-      issue: "Test 1 expected + Test 6 expected + Gaps truth reference outdated pip forms"
-    - path: "README.md"
-      issue: "Source of truth — uses `uv sync --extra dev`"
-  missing:
-    - "Update Test 1 expected to use `uv sync --extra dev`"
-    - "Update Test 6 expected to use `uv sync --extra dev --reinstall`"
-    - "Update Gaps section truth to reflect new wording"
-  debug_session: .planning/debug/uat-pip-instead-of-uv.md
 - truth: "`src/aionlslivetiming/py.typed` is the PEP 561 marker (existence + emptiness)"
   status: passed
   reason: "User reported: src/aionlslivetiming/py.typed ist vorhanden, aber leer — REINTERPRETED: 0-byte IS the canonical PEP 561 marker."
@@ -133,3 +115,20 @@ blocked: 0
       issue: "Correctly force-includes via [tool.hatch.build.targets.wheel.force-include]"
   missing: []
   debug_session: .planning/debug/py-typed-empty.md
+- truth: "UAT test instructions use the project's canonical install command (`uv sync --extra dev`)"
+  status: resolved
+  reason: "User reported: Wir haben kein pip, sondern uv — gap closure landed in 01-04 (Test 1 expected rewritten, Test 6 expected rewritten, Gaps section updated, ROADMAP Phase 1 success criterion #1 updated, VERIFICATION.md Observable Truths #1 + DIST-03 evidence row updated). Re-verification on 2026-06-20T18:35:00Z: `uv sync --extra dev` resolves cleanly, package imports with `version: 0.1.0`, 6 channel constants importable, full test suite (93 tests) green, coverage 91.90% ≥ 80% gate."
+  severity: minor
+  test: 1
+  root_cause: "Resolved via 01-04 documentation-only fix (no code changes)."
+  artifacts:
+    - path: ".planning/phases/01-foundation-package-parser/01-UAT.md"
+      issue: "Test 1 expected now reads `After running \`uv sync --extra dev\` (README.md canonical install command), ...`"
+    - path: ".planning/phases/01-foundation-package-parser/01-UAT.md"
+      issue: "Test 6 expected now uses `Run \`uv sync --extra dev --reinstall\``"
+    - path: ".planning/ROADMAP.md"
+      issue: "Phase 1 success criterion #1 now uses `uv sync --extra dev` + `uv run pytest`"
+    - path: ".planning/phases/01-foundation-package-parser/01-VERIFICATION.md"
+      issue: "Observable Truths #1 + DIST-03 row now reference `uv sync --extra dev`"
+  missing: []
+  debug_session: .planning/debug/uat-pip-instead-of-uv.md
