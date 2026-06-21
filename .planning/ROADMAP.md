@@ -74,7 +74,14 @@ Plans:
   2. The `aionlslivetiming` package has zero `homeassistant.*` imports — it installs and runs as a generic Python package
   3. User can invoke `python -m aionlslivetiming record <event_id> <file>` and `python -m aionlslivetiming replay <file>` from the command line without writing any Python
   4. The package is publish-ready to PyPI as `aionlslivetiming` with `py.typed`, MIT LICENSE, README (install + quickstart covering live + replay + recording + filter examples), CHANGELOG from v0.1.0, CONTRIBUTING guide, an API reference (mkdocs or pdoc), and at least 3 worked examples
-**Plans**: TBD
+**Plans**: 5 plans in 3 waves
+
+Plans:
+- [ ] 04-01-PLAN.md — Exception finalization (LTSNotFoundError + ParseError) + NLSClient composition root with from_replay classmethod
+- [ ] 04-02-PLAN.md — CLI scripts: nls-record (replaces aionlslivetiming-capture) + nls-replay with --speed/--limit/--strict/--summary
+- [ ] 04-03-PLAN.md — Three runnable worked examples + bundled sample_event.jsonl fixture
+- [ ] 04-04-PLAN.md — README + LICENSE + CHANGELOG + CONTRIBUTING + mkdocs.yml + docs/ tree
+- [ ] 04-05-PLAN.md — Build verification (uv build + twine check) + CI scripts (check_no_ha_imports.sh + build.sh)
 
 ## Progress
 
