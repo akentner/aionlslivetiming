@@ -1,6 +1,8 @@
 """nls-replay CLI — replay a recorded JSONL log via the public NLSClient API.
 
-Per D-03..D-05 + D-25 (see 04-CONTEXT.md). Surfaces:
+Per D-03..D-05 + D-25 (see 04-CONTEXT.md).
+
+CLI surface:
 
 - positional: ``<jsonl_path>``
 - ``--speed N`` (float, default 1.0; 0 = burst, >1 = faster than real-time)
