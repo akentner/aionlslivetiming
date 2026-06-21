@@ -29,7 +29,7 @@ from aionlslivetiming.transport import (
 
 if TYPE_CHECKING:
     import pathlib
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Awaitable, Callable
 
 
 # ---------- helpers ----------
@@ -124,6 +124,8 @@ async def test_recording_transport_yields_after_recording(tmp_path: pathlib.Path
     yielded = 0
     async for _m in rt:
         yielded += 1
+        # Yield control so the recorder's writer task can drain the queue.
+        await asyncio.sleep(0)
         if await asyncio.to_thread(_exists, dst):
             content = await asyncio.to_thread(_read_text, dst)
             recorded = len(content.strip().split("\n")) if content.strip() else 0
@@ -148,7 +150,10 @@ async def test_recording_transport_satisfies_transport_protocol(tmp_path: pathli
 async def test_recording_transport_rejects_non_transport_inner(tmp_path: pathlib.Path) -> None:
     """Passing a non-Transport to RecordingTransport raises TypeError."""
     with pytest.raises(TypeError):
-        RecordingTransport(inner="not a transport", recorder=JsonlRecorder(tmp_path / "x.jsonl"))
+        # Intentional: the constructor must reject anything that is not a
+        # Transport (this is the test). Mypy would otherwise complain about
+        # the incompatible type — that's the point.
+        RecordingTransport(inner="not a transport", recorder=JsonlRecorder(tmp_path / "x.jsonl"))  # type: ignore[arg-type]
 
 
 async def test_recording_transport_close_flushes_recorder(tmp_path: pathlib.Path) -> None:
@@ -174,7 +179,7 @@ async def test_recording_transport_close_flushes_recorder(tmp_path: pathlib.Path
 def _dumps(obj: Any) -> str:
     """JSON encode a dict to a string (mimics what real websockets yields)."""
     try:
-        import orjson  # type: ignore[import-not-found]
+        import orjson
 
         return orjson.dumps(obj).decode("utf-8")
     except ImportError:
@@ -218,7 +223,9 @@ class _CM:
         await self._ws.close()
 
 
-def _make_factory(ws: _MockWS):
+def _make_factory(
+    ws: _MockWS,
+) -> Callable[[str], Awaitable[_CM]]:
     async def factory(url: str, **kw: Any) -> _CM:
         ws.recv_kwargs.append(kw)
         return _CM(ws)

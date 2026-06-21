@@ -14,6 +14,8 @@ replace it with an internal one.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import httpx
 import pytest
 import respx
@@ -24,9 +26,12 @@ from aionlslivetiming.http.laps_data import (
     fetch_laps_data,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 @pytest.fixture
-def mock_laps_data() -> respx.MockRouter:
+def mock_laps_data() -> Iterator[respx.MockRouter]:
     """Respx mock router for the laps-data endpoint."""
     with respx.mock(assert_all_called=False) as router:
         yield router
@@ -36,11 +41,7 @@ async def test_fetch_laps_data_success_returns_dict(mock_laps_data: respx.MockRo
     """A JSON response is returned as a dict."""
     route = mock_laps_data.get(
         url__startswith=f"{DEFAULT_LAPS_DATA_BASE_URL}/event/NLS-1/laps-data"
-    ).mock(
-        return_value=httpx.Response(
-            200, json={"laps": [{"startingNo": 7, "lapTime": 162340}]}
-        )
-    )
+    ).mock(return_value=httpx.Response(200, json={"laps": [{"startingNo": 7, "lapTime": 162340}]}))
     result = await fetch_laps_data("NLS-1")
     assert route.called
     assert result == {"laps": [{"startingNo": 7, "lapTime": 162340}]}

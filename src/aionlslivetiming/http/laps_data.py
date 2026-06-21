@@ -107,8 +107,7 @@ async def fetch_laps_data(
             data = response.json()
         except Exception as exc:
             raise NLSHttpFallbackUnavailable(
-                f"laps-data endpoint returned non-JSON body: {exc}. "
-                f"Subscribe to channel 7 instead."
+                f"laps-data endpoint returned non-JSON body: {exc}. Subscribe to channel 7 instead."
             ) from exc
         if not isinstance(data, dict):
             raise NLSHttpFallbackUnavailable(
