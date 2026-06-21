@@ -1,19 +1,21 @@
-"""Live-capture JSONL logger CLI (D-07).
+"""Live-capture JSONL logger CLI (``nls-record`` console script).
 
-This module is the very first deliverable of Phase 1. It connects to the
-production NLS livetiming WebSocket at ``wss://livetiming.azurewebsites.net/``,
-sends the initial handshake JSON, and appends every received WebSocket frame
-to a JSONL file. Each line has the shape ``{"ts_recv_ms": <int>, "raw": <obj>}``
-— a strict subset of the Phase 2 recorder schema
+Replaces the Phase 1 D-07 ``aionlslivetiming-capture`` script (D-02 hard cut;
+library has never been published, so no external users exist). Connects to
+the production NLS livetiming WebSocket, sends the initial handshake JSON,
+and appends every received WebSocket frame to a JSONL file.
+
+Each JSONL line has the shape ``{"ts_recv_ms": <int>, "raw": <obj>}`` — a
+strict subset of the Phase 2 recorder schema
 ``{"ts_recv_ms", "event_pid", "raw", "parsed"}``.
 
-It does not parse the payload, does not maintain any state, and exits cleanly
-on Ctrl-C or remote close. The captured JSONL is the seed material for the
-hand-crafted parser fixtures in Plan 02 (D-08).
+Run as a module::
 
-Run it as a module::
+    python -m aionlslivetiming.cli.record --help
 
-    python -m aionlslivetiming.cli.jsonl_logger --help
+Or as a console script after ``uv sync``::
+
+    nls-record <event_id> <output.jsonl>
 """
 
 from __future__ import annotations
@@ -55,7 +57,7 @@ def _json_dumps(obj: Any) -> str:
     not installed (orjson is an optional extra per D-10).
     """
     try:
-        import orjson  # type: ignore[import-not-found]
+        import orjson
 
         result: str = orjson.dumps(obj).decode("utf-8")
     except ImportError:
@@ -69,7 +71,7 @@ def _json_loads(raw: str | bytes | bytearray) -> Any:
     Prefers :mod:`orjson`; falls back to :mod:`json` if not installed.
     """
     try:
-        import orjson  # type: ignore[import-not-found,unused-ignore]
+        import orjson
 
         result: Any = orjson.loads(raw)
     except ImportError:
@@ -111,7 +113,7 @@ async def run(
         Optional override for ``websockets.connect`` (used in tests).
         When ``None``, the real ``websockets`` module is imported lazily
         inside this coroutine so test code can monkeypatch
-        ``aionlslivetiming.cli.jsonl_logger.websockets``.
+        ``aionlslivetiming.cli.record.websockets``.
 
     Returns
     -------
@@ -134,7 +136,9 @@ async def run(
     out = pathlib.Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    deadline: float | None = time.monotonic() + max_seconds if max_seconds is not None else None
+    deadline: float | None = (
+        time.monotonic() + max_seconds if max_seconds is not None else None
+    )
 
     _log.info("connecting to %s for event %s (channels=%s)", url, event_id, list(channels))
 
@@ -213,11 +217,11 @@ async def run(
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point. Parses args and delegates to :func:`run`."""
     parser = argparse.ArgumentParser(
-        prog="aionlslivetiming.cli.jsonl_logger",
+        prog="nls-record",
         description=(
             "Connect to the NLS livetiming WebSocket and dump every received "
             "frame to a JSONL file. Used to capture real session data for "
-            "parser fixtures (Phase 1, D-07)."
+            "parser fixtures (Phase 1, D-07; renamed to nls-record in Phase 4, D-02)."
         ),
     )
     parser.add_argument(

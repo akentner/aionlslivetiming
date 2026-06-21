@@ -1,4 +1,4 @@
-"""Tests for the D-07 JSONL live-capture CLI.
+"""Tests for the nls-record CLI (cli/record.py).
 
 The tests mock ``websockets.connect`` so the test does not hit the network.
 The mock returns an async context manager whose ``__aenter__`` produces a
@@ -6,12 +6,12 @@ fake WebSocket that yields a fixed list of bytes-frames (or raises the
 configured exception).
 
 Each test exercises one branch of :func:`run` plus the CLI surface in
-:func:`main`.
+:func:`main`. Mirrors the style of the previous ``test_jsonl_logger.py``
+with imports re-pointed at :mod:`aionlslivetiming.cli.record`.
 """
 
 from __future__ import annotations
 
-import asyncio
 import json
 import sys
 from typing import TYPE_CHECKING, Any
@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 import pytest
 
-from aionlslivetiming.cli import jsonl_logger
+from aionlslivetiming.cli import record
 
 if TYPE_CHECKING:
     import pathlib
@@ -92,7 +92,7 @@ async def test_run_writes_one_jsonl_line_per_frame(tmp_path: pathlib.Path) -> No
     ws = _FakeWebSocket(frames)
     out = tmp_path / "out.jsonl"
 
-    rc = await jsonl_logger.run(
+    rc = await record.run(
         event_id="test-event",
         output_path=out,
         max_seconds=1,
@@ -131,7 +131,7 @@ async def test_run_handles_connection_closed(tmp_path: pathlib.Path) -> None:
     ws = _FakeWebSocket([b'{"eventPid":3,"text":"pit"}'], recv_exc=_ConnClosed())
     out = tmp_path / "out.jsonl"
 
-    rc = await jsonl_logger.run(
+    rc = await record.run(
         event_id="ev",
         output_path=out,
         websockets_factory=_make_factory(ws),
@@ -146,7 +146,7 @@ async def test_run_handles_keyboard_interrupt(tmp_path: pathlib.Path) -> None:
     ws = _FakeWebSocket([], recv_exc=KeyboardInterrupt())
     out = tmp_path / "out.jsonl"
 
-    rc = await jsonl_logger.run(
+    rc = await record.run(
         event_id="ev",
         output_path=out,
         websockets_factory=_make_factory(ws),
@@ -185,7 +185,7 @@ async def test_run_respects_max_seconds_when_server_quiet(tmp_path: pathlib.Path
     import time as _time
 
     started = _time.monotonic()
-    rc = await jsonl_logger.run(
+    rc = await record.run(
         event_id="ev",
         output_path=out,
         max_seconds=0.2,
@@ -215,23 +215,35 @@ def test_main_parses_args(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append(coro)
         return 0
 
-    monkeypatch.setattr(jsonl_logger.asyncio, "run", _fake_run)
-    monkeypatch.setattr(sys, "argv", ["jsonl_logger", "E-123", "out.jsonl"])
+    monkeypatch.setattr(record.asyncio, "run", _fake_run)
+    monkeypatch.setattr(sys, "argv", ["nls-record", "E-123", "out.jsonl"])
 
-    rc = jsonl_logger.main()
+    rc = record.main()
     assert rc == 0
     assert len(calls) == 1
 
 
 def test_main_help_exits_cleanly(monkeypatch: pytest.MonkeyPatch) -> None:
     """``--help`` exits via ``SystemExit(0)``."""
-    monkeypatch.setattr(sys, "argv", ["jsonl_logger", "--help"])
+    monkeypatch.setattr(sys, "argv", ["nls-record", "--help"])
     with pytest.raises(SystemExit) as exc:
-        jsonl_logger.main()
+        record.main()
     assert exc.value.code == 0
 
 
-def test_run_uses_websockets_module_when_no_factory(tmp_path: pathlib.Path) -> None:
+def test_main_uses_prog_nls_record(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The argparse ``prog`` is set to ``nls-record`` (D-02)."""
+    monkeypatch.setattr(sys, "argv", ["nls-record", "--help"])
+    with pytest.raises(SystemExit) as exc:
+        record.main()
+    assert exc.value.code == 0
+    # Build a parser manually with the same kwargs to check the prog string
+    # (SystemExit hides the actual --help output).
+    parser = record.argparse.ArgumentParser(prog="nls-record")
+    assert parser.prog == "nls-record"
+
+
+async def test_run_uses_websockets_module_when_no_factory(tmp_path: pathlib.Path) -> None:
     """Without an explicit factory, ``run`` falls back to the real websockets module."""
 
     class _CM:
@@ -250,12 +262,31 @@ def test_run_uses_websockets_module_when_no_factory(tmp_path: pathlib.Path) -> N
             return await _connect(*args, **kwargs)
 
     with patch.dict(sys.modules, {"websockets": _FakeWSModule}):
-        rc = asyncio.run(
-            jsonl_logger.run(
-                event_id="x",
-                output_path=tmp_path / "out.jsonl",
-            )
+        rc = await record.run(
+            event_id="x",
+            output_path=tmp_path / "out.jsonl",
         )
     assert rc == 0
     # File was created (even if empty) and the test exercised the lazy import.
     assert (tmp_path / "out.jsonl").exists()
+
+
+# -- Module surface tests ----------------------------------------------------------
+
+
+def test_record_module_exports_main_and_run() -> None:
+    """``cli.record`` exposes ``main`` and ``run`` (D-01 contract)."""
+    assert callable(record.main)
+    assert callable(record.run)
+
+
+def test_old_jsonl_logger_module_is_gone() -> None:
+    """The old ``aionlslivetiming.cli.jsonl_logger`` module no longer exists (D-02)."""
+    with pytest.raises(ImportError):
+        import aionlslivetiming.cli.jsonl_logger  # noqa: F401
+
+
+def test_default_channels_and_host() -> None:
+    """``DEFAULT_HOST`` and ``DEFAULT_CHANNELS`` constants are exported."""
+    assert record.DEFAULT_HOST == "wss://livetiming.azurewebsites.net/"
+    assert record.DEFAULT_CHANNELS == (0, 3, 4, 7, 501, 9002)

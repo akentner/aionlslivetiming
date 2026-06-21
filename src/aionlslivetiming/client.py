@@ -56,7 +56,7 @@ _log = get_logger("aionlslivetiming.client")
 
 def _default_channels() -> tuple[int, ...]:
     """Lazy import to avoid a hard import cycle with ``cli/`` at test time."""
-    from aionlslivetiming.cli.jsonl_logger import DEFAULT_CHANNELS
+    from aionlslivetiming.cli.record import DEFAULT_CHANNELS
 
     return DEFAULT_CHANNELS
 

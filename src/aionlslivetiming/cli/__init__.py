@@ -1,1 +1,1 @@
-"""Live-capture and replay CLI entry points (Phase 1: jsonl_logger only)."""
+"""CLI subpackage — not part of the public API. Console scripts only."""
