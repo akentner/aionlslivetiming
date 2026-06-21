@@ -14,6 +14,7 @@ from aionlslivetiming.exceptions import (
     ReplaySchemaError,
     UnknownEventError,
 )
+from aionlslivetiming.http import fetch_laps_data
 from aionlslivetiming.logging import get_logger
 from aionlslivetiming.state import Filter, Freshness, RaceState, Source
 from aionlslivetiming.transport import (
@@ -52,5 +53,6 @@ __all__ = [
     "Transport",
     "UnknownEventError",
     "__version__",
+    "fetch_laps_data",
     "get_logger",
 ]
