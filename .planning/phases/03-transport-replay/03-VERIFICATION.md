@@ -1,33 +1,15 @@
 ---
 phase: 03-transport-replay
-verified: 2026-06-21T15:00:00Z
-status: gaps_found
-score: 20/21 must-haves verified (1 unmet: REC-02)
-gaps:
-  - truth: "Recorder can be enabled/disabled at runtime (REC-02)"
-    status: failed
-    reason: "JsonlRecorder has no enable/disable toggle, no set_enabled(), no pause()/resume() methods. The only way to stop recording is to close the recorder. Runtime toggling is not implemented."
-    artifacts:
-      - path: src/aionlslivetiming/transport/recorder.py
-        issue: "No enable/disable API surface"
-      - path: src/aionlslivetiming/transport/recorder_wrapper.py
-        issue: "No enable/disable API surface; always records if recorder is provided"
-    missing:
-      - "Add `set_enabled(bool)` method on JsonlRecorder (or RecordingTransport) that gates append() without losing the writer task"
-      - "Add tests covering toggle-while-iterating (REC-02)"
-      - "Update plan/SUMMARY to acknowledge the runtime toggle is partial: 'not yet implemented at the recorder level; runtime enable/disable can be achieved by composing/uncomposing RecordingTransport'"
-rec_02_resolution:
-  resolved_in: "Plan 03-04 (gap closure)"
-  resolved_at: "2026-06-21T13:10:00Z"
-  commits:
-    - "7d6bacd: feat(03-04): add set_enabled to JsonlRecorder (REC-02 runtime toggle)"
-    - "84b1b6c: feat(03-04): add set_enabled passthrough to RecordingTransport (REC-02)"
-  evidence:
-    - "JsonlRecorder exposes `is_enabled` property + async `set_enabled(bool)` method (recorder.py)"
-    - "`append()` silently drops messages when `_enabled is False`; writer task keeps running"
-    - "RecordingTransport exposes the same `is_enabled` / `set_enabled` and delegates to the wrapped recorder (recorder_wrapper.py)"
-    - "4 new tests: 3 on JsonlRecorder (toggle-off, toggle-while-burst, post-close safety) + 1 on RecordingTransport (passthrough + recording-paused-while-iterating)"
-    - "Full suite: 261 passed (was 257), 95.29% coverage maintained, ruff + mypy on changed files clean (only pre-existing orjson `unused-ignore` remains)"
+verified: 2026-06-21T15:30:00Z
+status: passed
+score: 21/21 must-haves verified
+re_verification:
+  previous_status: gaps_found
+  previous_score: 20/21
+  gaps_closed:
+    - "REC-02: Recorder can be enabled/disabled at runtime (set_enabled on JsonlRecorder + RecordingTransport passthrough; 4 new tests; commits 7d6bacd + 84b1b6c)"
+  gaps_remaining: []
+  regressions: []
 human_verification:
   - test: "Run the UAT Step 1 against a real NLS session (live WebSocket to wss://livetiming.azurewebsites.net/)"
     expected: "Typed Message instances stream out; nls-1.jsonl is fully written on Ctrl-C"
@@ -44,9 +26,30 @@ human_verification:
 
 **Phase Goal:** A transport interface with three implementations (live WebSocket, JSONL replay, recording wrapper) plus the optional HTTP laps-data fallback — all feeding the same parser path so live and replay produce identical typed Messages.
 
-**Verified:** 2026-06-21T15:00:00Z
-**Status:** gaps_found (1 unmet requirement: REC-02)
-**Re-verification:** No — initial verification
+**Verified:** 2026-06-21T15:30:00Z
+**Status:** passed (21/21 must-haves verified)
+**Re-verification:** Yes — after REC-02 gap closure (Plan 03-04)
+
+## Re-verification Summary
+
+Previous status was `gaps_found` (20/21, REC-02 unmet). Plan 03-04 closed the REC-02 gap via two atomic commits:
+
+- `7d6bacd` — `JsonlRecorder.set_enabled(bool)` + `is_enabled` property + gated `append()`; 3 new tests
+- `84b1b6c` — `RecordingTransport.set_enabled(bool)` + `is_enabled` passthrough; 1 new test
+
+**Independent re-verification (2026-06-21T15:30:00Z):**
+
+| Check | Result |
+|-------|--------|
+| `uv run pytest tests/ -q` | **261 passed in 19.72s** (was 257, +4 REC-02 tests) |
+| Coverage gate (>=80%) | **95.29%** (gate met) |
+| `uv run ruff check` on changed files | **All checks passed!** |
+| `uv run mypy --strict` on changed src files | 1 pre-existing `orjson` `unused-ignore` (not a regression; documented in 03-02 SUMMARY) |
+| Runtime smoke: disable → append → re-enable → append | **1 line on disk** (expected: 1) ✓ |
+| 4 REC-02 tests by name | **4 passed, 257 deselected** ✓ |
+| All 21 requirement IDs (CONN+STREAM+REC+HTTP) | **21/21 SATISFIED** — REC-02 now ✓ |
+
+No regressions introduced. The other 20 already-verified requirements remain green.
 
 ## Goal Achievement
 
@@ -78,7 +81,7 @@ human_verification:
 | 22 | End-to-end: JsonlRecorder round-trip with ReplayTransport yields equal Messages | ✓ VERIFIED | `tests/test_transport_integration.py::test_round_trip_recorder_to_replay_preserves_messages`. |
 | 23 | End-to-end: RecordingTransport wrapping LiveTransport writes messages to disk in real time | ✓ VERIFIED | `tests/test_transport_integration.py::test_recording_live_yields_and_persists_in_real_time` + `test_recording_live_recorded_file_replays_through_replay_transport`. |
 
-**Score:** 20/21 verifiable requirements met (REC-02 missing runtime enable/disable).
+**Score:** 21/21 verifiable requirements met (REC-02 resolved via Plan 03-04).
 
 ### Required Artifacts
 
@@ -171,7 +174,7 @@ human_verification:
 | STREAM-03 | 03-02 | Backpressure (slow consumer doesn't crash reader task) | ✓ SATISFIED | Three independent asyncio.Queues decouple reader from consumer. (Implicit — not explicitly tested but architecturally sound.) |
 | STREAM-04 | 03-01, 03-02 | Cancel stream cleanly without dangling tasks | ✓ SATISFIED | close() cancels reader + watchdog + puts END sentinel; spot-check confirmed tasks are `done()` after close. |
 | REC-01 | 03-01, 03-03 | Record live WS message stream to JSONL | ✓ SATISFIED | JsonlRecorder.append(msg) writes one parsed message per line; integration test verifies Live+Recording writes to disk in real time. |
-| REC-02 | 03-01, 03-03 | Recorder can be enabled/disabled at runtime | ✗ BLOCKED | No `set_enabled()`, no pause()/resume(), no enable flag. Recorder is either constructed (always-on) or not. |
+| REC-02 | 03-04 | Recorder can be enabled/disabled at runtime | ✓ SATISFIED | `JsonlRecorder.set_enabled(bool)` + `is_enabled` property (recorder.py:96-111); `append()` silently drops when disabled (recorder.py:128-129); `RecordingTransport.set_enabled(bool)` delegates to inner recorder (recorder_wrapper.py:76-83); 4 new tests cover toggle-on/off, toggle-while-burst, post-close safety, and the wrapper passthrough. Commits `7d6bacd` + `84b1b6c`. |
 | REC-03 | 03-03 | Recorder implemented as transport wrapper, not subclass | ✓ SATISFIED | recorder_wrapper.py uses composition (isinstance check); RecordingTransport is itself a Transport. |
 | REC-04 | 03-01, 03-03 | Replay JSONL log through same API surface | ✓ SATISFIED | ReplayTransport is a Transport; round-trip tests in test_transport_integration.py. |
 | REC-05 | 03-01 | Replay preserves message order + timing OR has speed-multiplier | ✓ SATISFIED | speed_factor parameter (0/1.0/>1/<0); ts_recv_ms ordering enforced with ReplayOrderingError on violation. |
@@ -208,37 +211,21 @@ human_verification:
 
 ### Gaps Summary
 
-**1 gap blocking full goal achievement:**
+**No gaps remain.** All 21 Phase 3 requirements (CONN-01..08, STREAM-01..04, REC-01..06, HTTP-01..03) are verified with code evidence and passing tests.
 
-**REC-02 (Recorder can be enabled/disabled at runtime)** is not implemented. The current `JsonlRecorder` API surface is:
-- `JsonlRecorder(path)` — constructor
-- `await rec.append(msg)` — queue a write
-- `await rec.close()` — flush + stop writer
-- async context manager (`async with`)
-
-There is no `set_enabled(bool)`, no `pause()`, no `resume()`, and no enabled flag checked in `append()`. The RecordingTransport wrapper likewise has no toggle.
-
-**Workaround (partial):** A consumer can achieve runtime enable/disable by wrapping/unwrapping a `RecordingTransport` at runtime:
-```python
-wrapped = RecordingTransport(inner=raw, recorder=rec)
-# to disable: stop iterating, close recorder (one-shot), re-construct without recorder
-# to enable: open new recorder, construct new wrapper
-```
-
-But this is construction-time enable/disable, not runtime toggling on the same recorder instance.
-
-**Severity:** Minor for downstream use cases. Most consumers either want recording always-on (current behavior) or never-on (omit RecordingTransport). The runtime toggle is a power-user feature for tests or interactive use.
-
-**Recommended fix scope:** Add `JsonlRecorder.set_enabled(bool)` method (or an `enabled: bool = True` flag checked in `append()`); add corresponding `RecordingTransport.set_enabled(bool)`; add `tests/test_recording_transport.py::test_recording_transport_can_be_toggled_at_runtime` covering toggle-while-iterating.
-
-**No other gaps.** All 20 other Phase 3 requirements (CONN-01..08, STREAM-01..04, REC-01, REC-03..06, HTTP-01..03) are verified with code evidence and passing tests.
+The REC-02 gap flagged in the initial verification was closed by Plan 03-04:
+- `JsonlRecorder.set_enabled(bool)` + `is_enabled` property (recorder.py:96-111)
+- `append()` silently drops messages when disabled; writer task keeps running (recorder.py:128-129)
+- `RecordingTransport.set_enabled(bool)` + `is_enabled` passthrough (recorder_wrapper.py:72-83)
+- 4 new tests covering all the must-haves from the gap-closure plan
+- Commits `7d6bacd` + `84b1b6c` (independently verified at 2026-06-21T15:30:00Z)
 
 ---
 
 ## REC-02: Resolved
 
 **Resolved in:** Plan 03-04 (gap closure)
-**Resolved at:** 2026-06-21T13:10:00Z
+**Resolved at:** 2026-06-21T13:10:00Z (initial closure); re-verified 2026-06-21T15:30:00Z
 **Commits:**
 - `7d6bacd` — feat(03-04): add set_enabled to JsonlRecorder (REC-02 runtime toggle)
 - `84b1b6c` — feat(03-04): add set_enabled passthrough to RecordingTransport (REC-02)
@@ -280,10 +267,11 @@ Four new tests, all passing:
 
 ### Verification at a glance
 
-- `uv run pytest tests/ -q` → **261 passed in 20.21s** (was 257 — 4 new)
+- `uv run pytest tests/ -q` → **261 passed in 19.72s** (was 257 — 4 new)
 - Coverage: **95.29%** maintained (gate: 80%)
 - `uv run ruff check src/ tests/` → **All checks passed!**
-- `uv run mypy --strict` on changed files: **0 new errors** (2 pre-existing `orjson` `unused-ignore` documented in 03-02 SUMMARY remain)
+- `uv run mypy --strict` on changed files: **1 pre-existing `orjson` `unused-ignore` (recorder.py:35)** — not a regression; documented in 03-02 SUMMARY
+- Independent runtime smoke: disable→append→re-enable→append→close yields **1 line on disk** (expected 1) ✓
 
 ### Re-verified requirement
 
@@ -295,7 +283,7 @@ All 21/21 Phase 3 requirements are now satisfied.
 
 ---
 
-_Verified: 2026-06-21T15:00:00Z_
+_Verified: 2026-06-21T15:30:00Z_
 _Initial verification: 20/21, REC-02 gap flagged_
 _Re-verification: 21/21, REC-02 resolved (Plan 03-04)_
 _Verifier: the agent (gsd-verifier, then gsd-execute-phase)_
