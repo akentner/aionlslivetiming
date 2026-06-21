@@ -52,6 +52,19 @@ def make_time_sync_msg() -> TimeSyncMessage:
     return TimeSyncMessage(value_ms=1_700_000_000_000)
 
 
+def make_msg(pid: int = 0) -> InitialStateMessage:
+    """Build a minimal Message with a given event_pid for REC-02 tests.
+
+    All REC-02 toggle tests only assert on the count of lines written, not
+    on the parsed contents, so a single shape (InitialStateMessage with a
+    well-formed ``raw``) is sufficient. The ``pid`` argument is kept so the
+    tests read like the plan; the InitialStateMessage class itself always
+    has event_pid=0 by definition, so the value is informational only.
+    """
+    del pid  # informational; shape is always InitialStateMessage
+    return make_initial_msg()
+
+
 @pytest.fixture
 async def tmp_jsonl(tmp_path: pathlib.Path) -> AsyncIterator[pathlib.Path]:
     """Yield a temp JSONL path; pytest tmp_path handles cleanup."""
@@ -190,3 +203,43 @@ async def test_recorder_writes_correct_event_pids(tmp_jsonl: pathlib.Path) -> No
     lines = text.strip().split("\n")
     pids = [json.loads(ln)["event_pid"] for ln in lines]
     assert pids == [0, -1]
+
+
+# ---------- REC-02: runtime enable/disable ----------
+
+
+async def test_set_enabled_disables_writes(tmp_path: pathlib.Path) -> None:
+    """set_enabled(False) gates append(); set_enabled(True) resumes (REC-02)."""
+    rec = JsonlRecorder(tmp_path / "x.jsonl")
+    await rec.set_enabled(False)
+    assert rec.is_enabled is False
+    await rec.append(make_msg(pid=0))  # must not raise; must not write
+    await rec.set_enabled(True)  # re-enable
+    assert rec.is_enabled is True
+    await rec.append(make_msg(pid=0))  # must write
+    await rec.close()
+    lines = (tmp_path / "x.jsonl").read_text().strip().splitlines()
+    assert len(lines) == 1  # only the post-re-enable message
+
+
+async def test_toggle_while_iterating_safe(tmp_path: pathlib.Path) -> None:
+    """Disabling during a burst of appends drops them but the writer task stays alive (REC-02)."""
+    rec = JsonlRecorder(tmp_path / "x.jsonl")
+    for _i in range(5):
+        await rec.append(make_msg(pid=0))
+    await rec.set_enabled(False)
+    for _i in range(5):
+        await rec.append(make_msg(pid=0))  # dropped
+    await rec.set_enabled(True)
+    await rec.append(make_msg(pid=0))  # written
+    await rec.close()
+    lines = (tmp_path / "x.jsonl").read_text().strip().splitlines()
+    assert len(lines) == 6  # 5 before disable + 1 after re-enable
+
+
+async def test_set_enabled_after_close_raises_no(tmp_path: pathlib.Path) -> None:
+    """set_enabled is safe to call after close; flag is just stored (REC-02)."""
+    rec = JsonlRecorder(tmp_path / "x.jsonl")
+    await rec.close()
+    await rec.set_enabled(False)  # no raise
+    assert rec.is_enabled is False

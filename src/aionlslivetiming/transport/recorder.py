@@ -73,6 +73,12 @@ class JsonlRecorder:
     runs forever (awaiting the queue) until `close()` is called or the
     sentinel is enqueued. Concurrent `append()` calls are safe — the queue
     serialises them and the writer writes one complete line at a time.
+
+    The recorder supports a runtime enable/disable toggle (REC-02): call
+    `set_enabled(False)` to gate future `append()` calls without closing
+    the writer task. Already-queued messages still get written; only
+    subsequent `append()` calls are dropped (silently) while disabled.
+    Call `set_enabled(True)` to resume persistence.
     """
 
     def __init__(self, path: str | pathlib.Path) -> None:
@@ -80,10 +86,29 @@ class JsonlRecorder:
         self._queue: asyncio.Queue[Any] = asyncio.Queue()
         self._task: asyncio.Task[None] | None = None
         self._closed = False
+        self._enabled: bool = True  # REC-02: runtime toggle
 
     @property
     def path(self) -> pathlib.Path:
         return self._path
+
+    @property
+    def is_enabled(self) -> bool:
+        """Whether new ``append()`` calls will be persisted (REC-02)."""
+        return self._enabled
+
+    async def set_enabled(self, enabled: bool) -> None:
+        """Toggle recording at runtime (REC-02).
+
+        Setting ``False`` does NOT close the writer task — already-queued
+        messages still get written, and the queue keeps accepting future
+        appends but silently drops them at insert time. Call
+        ``set_enabled(True)`` to resume persistence.
+
+        Safe to call after ``close()``; the flag is just stored.
+        """
+        self._enabled = bool(enabled)
+        _log.info("recorder set_enabled=%s path=%s", self._enabled, self._path)
 
     async def __aenter__(self) -> JsonlRecorder:
         return self
@@ -96,9 +121,12 @@ class JsonlRecorder:
 
         Returns immediately after queueing. The actual file write happens
         on the writer task. Raises RuntimeError if already closed.
+        Silently drops the message when the recorder is disabled (REC-02).
         """
         if self._closed:
             raise RuntimeError("JsonlRecorder is closed")
+        if not self._enabled:
+            return  # REC-02: silently drop when disabled
         if self._task is None:
             self._task = asyncio.create_task(self._writer_loop())
         await self._queue.put(msg)
