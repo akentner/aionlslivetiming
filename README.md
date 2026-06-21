@@ -1,77 +1,94 @@
-# AIO NLS Livetiming API
+# aionlslivetiming
 
-An async-first Python client library for the official Nürburgring Langstrecken-Serie (NLS) livetiming service at `livetiming.azurewebsites.net`. It wraps the live WebSocket feed and exposes a clean Python API for downstream projects (Discord bots, dashboards, Home Assistant integrations, analytics tools).
+Async-first Python client for the Nürburgring Langstrecken-Serie livetiming service.
 
-## Status
+[![PyPI](https://img.shields.io/pypi/v/aionlslivetiming.svg)](https://pypi.org/project/aionlslivetiming/)
+[![Python](https://img.shields.io/pypi/pyversions/aionlslivetiming.svg)](https://pypi.org/project/aionlslivetiming/)
+[![License](https://img.shields.io/pypi/l/aionlslivetiming.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-alpha-yellow.svg)](.planning/ROADMAP.md)
 
-**Phase 1 of 4 complete** — Foundation (package skeleton + parser + 11 fixtures). See `.planning/ROADMAP.md` for the full plan.
+`aionlslivetiming` wraps the official NLS livetiming WebSocket feed at
+`livetiming.azurewebsites.net` and exposes a clean async Python API. It works
+equally well in two modes: **live** (connected to a running race) and
+**replay** (driven from a recorded JSONL log). Downstream projects (Discord
+bots, dashboards, Home Assistant integrations, analytics tools) consume NLS
+race data without reverse-engineering the Azure WebSocket or the cryptic
+short-code JSON the server actually emits.
 
 ## Installation
 
-This project uses [uv](https://docs.astral.sh/uv/) as the single task
-runner — no Makefile, no Taskfile, no second wrapper. uv manages the
-virtualenv, resolves dependencies, and runs every development command
-through it. Anything you can do with `pytest` / `ruff` / `mypy`, you
-can do with `uv run pytest` / `uv run ruff` / `uv run mypy` without
-activating the venv first.
-
 ```bash
-# Install runtime + dev dependencies into .venv/
-uv sync --extra dev
+uv add aionlslivetiming
+# or:
+pip install aionlslivetiming
 ```
 
-## Development
+Requires Python 3.12+. No Home Assistant-specific dependencies; safe to
+install anywhere.
 
-All commands assume `uv sync --extra dev` has been run once.
+## 60-Second Quickstart
 
-```bash
-# Run tests
-uv run pytest
+### Live (5 lines)
 
-# Lint
-uv run ruff check src tests
+```python
+import asyncio
+from aionlslivetiming import NLSClient
 
-# Format
-uv run ruff format src tests
+async def main():
+    async with NLSClient(event_id="20") as client:
+        async for msg in client.messages():
+            print(msg)
 
-# Type-check
-uv run mypy --strict src
-
-# Coverage gate (fails build if <80% on parser/+events/)
-uv run pytest --cov=aionlslivetiming --cov-report=term-missing
+asyncio.run(main())
 ```
 
-### Live capture (D-07)
+### Replay (3 lines)
 
-Capture raw WebSocket frames from the NLS livetiming service into a
-JSONL file. Useful for grabbing fresh fixture material during an
-active race.
+```python
+from aionlslivetiming import NLSClient
 
-```bash
-# Via the installed console script (preferred — short and tab-completeable)
-uv run aionlslivetiming-capture 20 /tmp/nls_event20.jsonl --max-seconds 30
-
-# Via the long module path (equivalent)
-uv run python -m aionlslivetiming.cli.jsonl_logger 20 /tmp/nls_event20.jsonl --max-seconds 30
-
-# Via the wrapper (delegates to uv run)
-./scripts/capture.sh 20 /tmp/nls_event20.jsonl --max-seconds 30
+async with NLSClient.from_replay("recording.jsonl") as client:
+    async for msg in client.messages():
+        print(msg)
 ```
 
-See `uv run aionlslivetiming-capture --help` for all options
-(`--host`, `--channels`, `--max-seconds`).
+### Filter (5 lines)
 
-### Why no Taskfile / Makefile / Hatch scripts?
+```python
+async with NLSClient.from_replay("recording.jsonl") as client:
+    async for _ in client.messages():
+        pass  # populate state
+    top3 = client.state.filter().by_position(lo=1, hi=3).cars()
+    for car in top3:
+        print(car.starting_no, car.driver)
+```
 
-For a single-language Python library, uv + `pyproject.toml` is enough:
+### Recording
 
-- `uv sync` reads `[project.optional-dependencies]` — one source of truth
-- `uv run` resolves the tool inside the venv — no `activate` step
-- `pyproject.toml` already carries `[tool.ruff]`, `[tool.mypy]`,
-  `[tool.pytest.ini_options]` — no second config file to drift
+```bash
+uv run nls-record 20 /tmp/event.jsonl
+```
 
-A Taskfile would only earn its keep in a multi-language monorepo.
+Captures a live race to JSONL for offline replay.
+
+## Documentation
+
+Full documentation: [docs/quickstart.md](docs/quickstart.md)
+
+- [Quickstart](docs/quickstart.md) — full walkthrough (live + replay + record + filter)
+- [Examples](examples/) — three worked examples
+- [API Reference](docs/api/) — auto-generated from docstrings
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [License](LICENSE) — MIT
 
 ## License
 
-MIT — see [LICENSE](LICENSE) (to be added in Phase 4).
+MIT — see [LICENSE](LICENSE).
+
+## Acknowledgements
+
+Race data is published by the
+[Nürburgring Langstrecken-Serie](https://www.nuerburgring-langstrecken-serie.de/).
+This library is a community wrapper; it is not affiliated with or endorsed
+by the NLS organization.
