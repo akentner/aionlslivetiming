@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-06-21T12:45:47.229Z"
+status: completed
+stopped_at: Completed 03-04-PLAN.md (REC-02 gap closure); Phase 3 complete at 21/21
+last_updated: "2026-06-21T13:11:59.113Z"
 last_activity: 2026-06-21
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 0
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-20)
 
 **Core value:** Downstream Python projects can subscribe to a running NLS race and get typed, filtered, cached race data — live or replayed from a log — without ever touching the Azure WebSocket or the cryptic short-code JSON the server actually emits.
-**Current focus:** Phase 03 — transport-replay
+**Current focus:** Phase 03 — transport-replay (COMPLETE; ready for Phase 4)
 
 ## Current Position
 
 Phase: 03 (transport-replay) — COMPLETE
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Plan: 4 of 4 (gap-closure Plan 04 closed the REC-02 gap)
+Status: Phase complete — all 21/21 Phase 3 requirements satisfied
 Last activity: 2026-06-21
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (within Phase 3); overall project at 75% (3 of 4 phases)
 
 ## Performance Metrics
 
@@ -65,6 +65,8 @@ Progress: [██████████] 100%
 | Phase 03 P02 | 569 | 2 tasks | 7 files |
 | Phase 03-transport-replay P03 | 120min | 3 tasks | 7 files |
 | Phase 03-transport-replay P03 | 30min | 3 tasks | 7 files |
+| Phase 03-transport-replay P04 (REC-02 gap closure) | 322s | 3 tasks | 7 files |
+| Phase 03 P04 | 322 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -102,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 03]: LiveTransport keeps three independent asyncio.Queue streams (messages/time_sync/lts_not_found) — D-04 separation enforced by queue ownership, not by ad-hoc checks
 - [Phase 03]: Pending-exception handoff: UnknownEventError is stored on transport._pending_messages_exc before being raised by the reader — the outer reader_loop's broad 'except Exception' cannot safely be widened without breaking the backoff cycle
 - [Phase 03]: LTS_NOT_FOUND classifier order matters: ended_seen is checked first; not_yet_started requires BOTH young connection AND no initial state with results; everything else is unknown_event (D-06)
+- [Phase 03-transport-replay (Plan 04 gap closure)]: REC-02 runtime toggle is async `set_enabled(bool)` on JsonlRecorder; the disable check is at the queue-insert point in `append()` (writer loop stays simple, already-queued messages still drain); RecordingTransport exposes the same surface as a thin passthrough to its inner recorder
+- [Phase 03-transport-replay (Plan 04 gap closure)]: `set_enabled` is `async` (not sync as the plan's recorder-section pseudo-code implied) so the wrapper's `await self._recorder.set_enabled(enabled)` works without `asyncio.run`; keeps a single mutator pattern across the surface
+- [Phase 03]: REC-02 runtime toggle is async set_enabled(bool) on JsonlRecorder; disable check is at the queue-insert point in append() so the writer stays simple and already-queued messages still drain while disabled (Plan 03-04)
 
 ### Pending Todos
 
@@ -114,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-21T12:45:33.914Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-06-21T13:11:54.425Z
+Stopped at: Completed 03-04-PLAN.md (REC-02 gap closure); Phase 3 complete at 21/21
 Resume file: None

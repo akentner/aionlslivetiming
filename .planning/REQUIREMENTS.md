@@ -54,7 +54,7 @@
 ### Recording & Replay
 
 - [x] **REC-01**: User can record the live WebSocket message stream to a JSONL file (one parsed message per line)
-- [x] **REC-02**: Recorder can be enabled/disabled at runtime
+- [x] **REC-02**: Recorder can be enabled/disabled at runtime *(runtime toggle landed in Plan 03-04 — `JsonlRecorder.set_enabled(bool)` + `RecordingTransport.set_enabled(bool)` passthrough)*
 - [x] **REC-03**: Recorder is implemented as a transport wrapper, not a subclass — works over any transport
 - [x] **REC-04**: User can replay a JSONL log through the same API surface as a live connection
 - [x] **REC-05**: Replay preserves message order and timing (or has a speed-multiplier option)

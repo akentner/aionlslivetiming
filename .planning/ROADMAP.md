@@ -8,7 +8,7 @@ Build a bottom-up async-first Python client library for the Nürburgring Langstr
 
 - [ ] **Phase 1: Foundation (Package + Parser)** - Skeleton, HA-pinned deps, 8 typed Message dataclasses, per-PID parsers, UnknownMessage fallback, parser fixtures and unit tests
 - [x] **Phase 2: State + Filtering** - Idempotent RaceState, filter DSL (class/starting_no/driver/position/lap/sector), cache freshness, JSON export/import (completed 2026-06-20)
-- [ ] **Phase 3: Transport + Replay** - Transport Protocol, LiveTransport (WebSocket + reconnect + heartbeat), ReplayTransport, RecordingTransport wrapper, HTTP laps-data fallback
+- [x] **Phase 3: Transport + Replay** - Transport Protocol, LiveTransport (WebSocket + reconnect + heartbeat), ReplayTransport, RecordingTransport wrapper, HTTP laps-data fallback (completed 2026-06-21; REC-02 runtime toggle closed in Plan 03-04)
 - [ ] **Phase 4: Client + Distribution** - NLSClient composition root, async stream API with cancellation safety, CLI entry points, README/API ref/CHANGELOG/LICENSE/CONTRIBUTING, PyPI publish prep
 
 ## Phase Details
@@ -85,5 +85,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation (Package + Parser) | 4/4 | Complete | 2026-06-20 |
 | 2. State + Filtering | 3/3 | Complete   | 2026-06-20 |
-| 3. Transport + Replay | 0/3 | Not started | - |
+| 3. Transport + Replay | 4/4 | Complete   | 2026-06-21 |
 | 4. Client + Distribution | 0/TBD | Not started | - |
