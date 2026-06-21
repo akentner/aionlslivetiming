@@ -19,7 +19,9 @@ from aionlslivetiming.state import Filter, Freshness, RaceState, Source
 from aionlslivetiming.transport import (
     ClockOffset,
     JsonlRecorder,
+    LiveTransport,
     LTSNotFoundEvent,
+    LTSNotFoundPolicy,
     ReconnectPolicy,
     ReplayTransport,
     Transport,
@@ -33,6 +35,8 @@ __all__ = [
     "Freshness",
     "JsonlRecorder",
     "LTSNotFoundEvent",
+    "LTSNotFoundPolicy",
+    "LiveTransport",
     "NLSError",
     "NLSHttpFallbackUnavailable",
     "RaceState",

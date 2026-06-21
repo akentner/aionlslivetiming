@@ -9,9 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import json as _json
-from typing import Any, AsyncIterator
-
-import pytest
+from typing import TYPE_CHECKING, Any
 
 from aionlslivetiming.events import (
     InitialStateMessage,
@@ -19,19 +17,34 @@ from aionlslivetiming.events import (
 )
 from aionlslivetiming.transport import LiveTransport, ReconnectPolicy
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
+
+def _dumps(obj: Any) -> str:
+    """JSON encode a dict to a string (mimics what real websockets yields)."""
+    try:
+        import orjson  # type: ignore[import-not-found]
+
+        return orjson.dumps(obj).decode("utf-8")
+    except ImportError:
+        import json as _stdlib
+
+        return _stdlib.dumps(obj, separators=(",", ":"))
+
 
 class _MockWebSocket:
     """A fake websockets connection that emits a scripted list of frames.
 
-    Usage in tests::
-
-        ws = _MockWebSocket(frames=[...])
-        factory = lambda url, **kw: _ctx_mgr_returning(ws)
-        transport = LiveTransport("evt-1", websockets_factory=factory)
+    The real ``websockets`` library yields JSON-as-text on iteration, so
+    we serialize each frame dict before yielding — keeping the production
+    code path faithful (no dict/str branching).
     """
 
     def __init__(self, frames: list[Any]) -> None:
-        self._frames = list(frames)
+        self._frames = [
+            _dumps(f) if not isinstance(f, (str, bytes, bytearray)) else f for f in frames
+        ]
         self.sent: list[str] = []
         self.recv_kwargs: list[dict[str, Any]] = []
 
@@ -157,7 +170,7 @@ async def test_live_transport_time_sync_excluded_from_messages() -> None:
 
 
 async def test_live_transport_passes_ping_none_to_websockets() -> None:
-    """D-01: connect call uses ping_interval=None, ping_timeout=None (library does not auto-ping)."""
+    """D-01: connect uses ping_interval=None, ping_timeout=None (no auto-ping)."""
     ws = _MockWebSocket(frames=[INITIAL_FRAME])
     transport = LiveTransport(
         "evt-1",

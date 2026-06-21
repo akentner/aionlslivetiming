@@ -60,6 +60,8 @@ def test_reconnect_policy_default_base_and_cap() -> None:
 
 def test_reconnect_policy_is_frozen() -> None:
     """ReconnectPolicy is frozen — mutation raises FrozenInstanceError."""
+    import dataclasses
+
     p = ReconnectPolicy()
-    with pytest.raises(Exception):  # FrozenInstanceError
+    with pytest.raises(dataclasses.FrozenInstanceError):
         p.base_delay_s = 2.0  # type: ignore[misc]

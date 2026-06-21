@@ -21,9 +21,8 @@ from aionlslivetiming.transport.base import (
 )
 from aionlslivetiming.transport.recorder import JsonlRecorder
 from aionlslivetiming.transport.replay import ReplayTransport
+from aionlslivetiming.transport.websocket import LiveTransport, LTSNotFoundPolicy
 
-# Plan 02 will add:
-# from aionlslivetiming.transport.websocket import LiveTransport
 # Plan 03 will add:
 # from aionlslivetiming.transport.recorder import RecordingTransport
 
@@ -32,8 +31,9 @@ __all__ = [
     "ConnectionError",
     "JsonlRecorder",
     "LTSNotFoundEvent",
+    "LTSNotFoundPolicy",
     "LTSNotFoundReason",
-    "LiveTransport",  # populated by Plan 02
+    "LiveTransport",
     "NLSError",
     "NLSHttpFallbackUnavailable",
     "ReconnectPolicy",
