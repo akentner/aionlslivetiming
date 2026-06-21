@@ -7,14 +7,14 @@
 
 ### Connection
 
-- [ ] **CONN-01**: User can connect to the livetiming WebSocket at `wss://livetiming.azurewebsites.net/` by event id
-- [ ] **CONN-02**: User can disconnect cleanly and release the underlying socket
+- [x] **CONN-01**: User can connect to the livetiming WebSocket at `wss://livetiming.azurewebsites.net/` by event id
+- [x] **CONN-02**: User can disconnect cleanly and release the underlying socket
 - [ ] **CONN-03**: Client auto-reconnects on transient network errors with jittered exponential backoff
 - [ ] **CONN-04**: Client honors the server's time-sync message (`{type: "time", value: <ms>}`) and exposes a clock-offset helper
 - [ ] **CONN-05**: Client surfaces `LTS_NOT_FOUND` as a typed event, not an exception, by default
 - [ ] **CONN-06**: Client can subscribe to any combination of channels (0/4, 3, 7, 501, 9002) and the per-car laps channel accepts `{ session, startingNo }`
 - [ ] **CONN-07**: Client survives race session transitions (qualifying → heat → race) without crashing or losing cached state
-- [ ] **CONN-08**: User can override the base host for testing or local development
+- [x] **CONN-08**: User can override the base host for testing or local development
 
 ### Parsing
 
@@ -46,19 +46,19 @@
 
 ### Live Event Stream
 
-- [ ] **STREAM-01**: User can iterate `async for msg in client.messages()` to consume every parsed message in order
-- [ ] **STREAM-02**: Stream yields typed message objects, never raw dicts
-- [ ] **STREAM-03**: Stream handles backpressure gracefully (slow consumer doesn't crash the reader task)
-- [ ] **STREAM-04**: User can cancel the stream cleanly without leaving dangling tasks
+- [x] **STREAM-01**: User can iterate `async for msg in client.messages()` to consume every parsed message in order
+- [x] **STREAM-02**: Stream yields typed message objects, never raw dicts
+- [x] **STREAM-03**: Stream handles backpressure gracefully (slow consumer doesn't crash the reader task)
+- [x] **STREAM-04**: User can cancel the stream cleanly without leaving dangling tasks
 
 ### Recording & Replay
 
-- [ ] **REC-01**: User can record the live WebSocket message stream to a JSONL file (one parsed message per line)
-- [ ] **REC-02**: Recorder can be enabled/disabled at runtime
-- [ ] **REC-03**: Recorder is implemented as a transport wrapper, not a subclass — works over any transport
-- [ ] **REC-04**: User can replay a JSONL log through the same API surface as a live connection
-- [ ] **REC-05**: Replay preserves message order and timing (or has a speed-multiplier option)
-- [ ] **REC-06**: Replay is independent of any live network — fully usable offline
+- [x] **REC-01**: User can record the live WebSocket message stream to a JSONL file (one parsed message per line)
+- [x] **REC-02**: Recorder can be enabled/disabled at runtime
+- [x] **REC-03**: Recorder is implemented as a transport wrapper, not a subclass — works over any transport
+- [x] **REC-04**: User can replay a JSONL log through the same API surface as a live connection
+- [x] **REC-05**: Replay preserves message order and timing (or has a speed-multiplier option)
+- [x] **REC-06**: Replay is independent of any live network — fully usable offline
 
 ### HTTP
 
@@ -136,14 +136,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONN-01 | Phase 3 | Pending |
-| CONN-02 | Phase 3 | Pending |
+| CONN-01 | Phase 3 | Complete |
+| CONN-02 | Phase 3 | Complete |
 | CONN-03 | Phase 3 | Pending |
 | CONN-04 | Phase 3 | Pending |
 | CONN-05 | Phase 3 | Pending |
 | CONN-06 | Phase 3 | Pending |
 | CONN-07 | Phase 3 | Pending |
-| CONN-08 | Phase 3 | Pending |
+| CONN-08 | Phase 3 | Complete |
 | PARSE-01 | Phase 1 | Complete |
 | PARSE-02 | Phase 1 | Complete |
 | PARSE-03 | Phase 1 | Complete |
@@ -163,16 +163,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILT-05 | Phase 2 | Complete |
 | FILT-06 | Phase 2 | Complete |
 | FILT-07 | Phase 2 | Complete |
-| STREAM-01 | Phase 3 | Pending |
-| STREAM-02 | Phase 3 | Pending |
-| STREAM-03 | Phase 3 | Pending |
-| STREAM-04 | Phase 3 | Pending |
-| REC-01 | Phase 3 | Pending |
-| REC-02 | Phase 3 | Pending |
-| REC-03 | Phase 3 | Pending |
-| REC-04 | Phase 3 | Pending |
-| REC-05 | Phase 3 | Pending |
-| REC-06 | Phase 3 | Pending |
+| STREAM-01 | Phase 3 | Complete |
+| STREAM-02 | Phase 3 | Complete |
+| STREAM-03 | Phase 3 | Complete |
+| STREAM-04 | Phase 3 | Complete |
+| REC-01 | Phase 3 | Complete |
+| REC-02 | Phase 3 | Complete |
+| REC-03 | Phase 3 | Complete |
+| REC-04 | Phase 3 | Complete |
+| REC-05 | Phase 3 | Complete |
+| REC-06 | Phase 3 | Complete |
 | HTTP-01 | Phase 3 | Pending |
 | HTTP-02 | Phase 3 | Pending |
 | HTTP-03 | Phase 3 | Pending |

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: ready_to_execute
-stopped_at: Phase 03 plans written and committed
-last_updated: "2026-06-21T00:00:00.000Z"
+status: executing
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-06-21T00:07:38.712Z"
 last_activity: 2026-06-21
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 10
-  completed_plans: 7
+  completed_plans: 8
   percent: 0
 ---
 
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 
 ## Current Position
 
-Phase: 3
-Plan: Plans written (3/3), ready to execute
-Status: Phase planned — ready for execution
+Phase: 03 (transport-replay) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-06-21
 
 Progress: [░░░░░░░░░░] 0%
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-state-filtering P01 | 360 | 1 tasks | 11 files |
 | Phase 02-state-filtering P02 | 380 | 1 tasks | 5 files |
 | Phase 02-state-filtering P03 | 600 | 1 tasks | 3 files |
+| Phase 03 P01 | 305 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,11 @@ Recent decisions affecting current work:
 - [Phase 02-state-filtering]: Malformed JSON / missing schema_version / wrong version / non-object all raise ValueError (D-PERSIST-5) — never silently returns empty state
 - [Phase 02-state-filtering]: Stdlib json over orjson for state persistence (D-PERSIST-1) — user-initiated path, not WS hot path; orjson stays optional extra
 - [Phase 02-state-filtering]: Idempotency contract preserved across round-trip (D-PERSIST-3) — _seen_message_keys rebuilt from _messages on import, re-applying RaceMessage after round-trip does not duplicate
+- [Phase 03-transport-replay]: Transport Protocol published (runtime_checkable); Plan 01 ships the Protocol + a real implementer (ReplayTransport) so isinstance checks resolve against a witness
+- [Phase 03-transport-replay]: Exception hierarchy: preliminary names per D-EXC — NLSError + 7 subclasses (ConnectionError, UnknownEventError, ReplayError family, NLSHttpFallbackUnavailable); all catchable as NLSError
+- [Phase 03-transport-replay]: JsonlRecorder writer runs on dedicated asyncio.Task fed by asyncio.Queue (Pitfall #7) — append() is non-blocking, concurrent-safe, no partial-line interleaving
+- [Phase 03-transport-replay]: ReplayTransport applies speed_factor sleep BEFORE yielding (first message emits immediately); prev_ts_for_sleep kept separate from the ordering-check prev_ts to avoid off-by-one
+- [Phase 03-transport-replay]: D-10 invariant: every JSONL raw re-parsed through parser.parse(); parsed field is informational only (not used by ReplayTransport)
 
 ### Pending Todos
 
@@ -102,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T23:40:05.143Z
-Stopped at: Phase 03 context gathered
-Resume file: .planning/phases/03-transport-replay/03-CONTEXT.md
+Last session: 2026-06-21T00:07:38.709Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
