@@ -9,11 +9,11 @@
 
 - [x] **CONN-01**: User can connect to the livetiming WebSocket at `wss://livetiming.azurewebsites.net/` by event id
 - [x] **CONN-02**: User can disconnect cleanly and release the underlying socket
-- [ ] **CONN-03**: Client auto-reconnects on transient network errors with jittered exponential backoff
-- [ ] **CONN-04**: Client honors the server's time-sync message (`{type: "time", value: <ms>}`) and exposes a clock-offset helper
-- [ ] **CONN-05**: Client surfaces `LTS_NOT_FOUND` as a typed event, not an exception, by default
-- [ ] **CONN-06**: Client can subscribe to any combination of channels (0/4, 3, 7, 501, 9002) and the per-car laps channel accepts `{ session, startingNo }`
-- [ ] **CONN-07**: Client survives race session transitions (qualifying → heat → race) without crashing or losing cached state
+- [x] **CONN-03**: Client auto-reconnects on transient network errors with jittered exponential backoff
+- [x] **CONN-04**: Client honors the server's time-sync message (`{type: "time", value: <ms>}`) and exposes a clock-offset helper
+- [x] **CONN-05**: Client surfaces `LTS_NOT_FOUND` as a typed event, not an exception, by default
+- [x] **CONN-06**: Client can subscribe to any combination of channels (0/4, 3, 7, 501, 9002) and the per-car laps channel accepts `{ session, startingNo }`
+- [x] **CONN-07**: Client survives race session transitions (qualifying → heat → race) without crashing or losing cached state
 - [x] **CONN-08**: User can override the base host for testing or local development
 
 ### Parsing
@@ -138,11 +138,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | CONN-01 | Phase 3 | Complete |
 | CONN-02 | Phase 3 | Complete |
-| CONN-03 | Phase 3 | Pending |
-| CONN-04 | Phase 3 | Pending |
-| CONN-05 | Phase 3 | Pending |
-| CONN-06 | Phase 3 | Pending |
-| CONN-07 | Phase 3 | Pending |
+| CONN-03 | Phase 3 | Complete |
+| CONN-04 | Phase 3 | Complete |
+| CONN-05 | Phase 3 | Complete |
+| CONN-06 | Phase 3 | Complete |
+| CONN-07 | Phase 3 | Complete |
 | CONN-08 | Phase 3 | Complete |
 | PARSE-01 | Phase 1 | Complete |
 | PARSE-02 | Phase 1 | Complete |

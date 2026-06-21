@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-21T00:07:38.712Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-06-21T00:19:16.359Z"
 last_activity: 2026-06-21
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 10
-  completed_plans: 8
+  completed_plans: 9
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-20)
 ## Current Position
 
 Phase: 03 (transport-replay) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-21
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-state-filtering P02 | 380 | 1 tasks | 5 files |
 | Phase 02-state-filtering P03 | 600 | 1 tasks | 3 files |
 | Phase 03 P01 | 305 | 2 tasks | 10 files |
+| Phase 03 P02 | 569 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 03-transport-replay]: JsonlRecorder writer runs on dedicated asyncio.Task fed by asyncio.Queue (Pitfall #7) — append() is non-blocking, concurrent-safe, no partial-line interleaving
 - [Phase 03-transport-replay]: ReplayTransport applies speed_factor sleep BEFORE yielding (first message emits immediately); prev_ts_for_sleep kept separate from the ordering-check prev_ts to avoid off-by-one
 - [Phase 03-transport-replay]: D-10 invariant: every JSONL raw re-parsed through parser.parse(); parsed field is informational only (not used by ReplayTransport)
+- [Phase 03]: LiveTransport keeps three independent asyncio.Queue streams (messages/time_sync/lts_not_found) — D-04 separation enforced by queue ownership, not by ad-hoc checks
+- [Phase 03]: Pending-exception handoff: UnknownEventError is stored on transport._pending_messages_exc before being raised by the reader — the outer reader_loop's broad 'except Exception' cannot safely be widened without breaking the backoff cycle
+- [Phase 03]: LTS_NOT_FOUND classifier order matters: ended_seen is checked first; not_yet_started requires BOTH young connection AND no initial state with results; everything else is unknown_event (D-06)
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-21T00:07:38.709Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-06-21T00:19:16.356Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

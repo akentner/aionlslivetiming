@@ -62,7 +62,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Transport Protocol + exceptions + ReplayTransport + JsonlRecorder (no network)
-- [ ] 03-02-PLAN.md — LiveTransport (WebSocket + handshake + heartbeat + reconnect + LTS_NOT_FOUND three-state)
+- [x] 03-02-PLAN.md — LiveTransport (WebSocket + handshake + heartbeat + reconnect + LTS_NOT_FOUND three-state)
 - [ ] 03-03-PLAN.md — RecordingTransport composition wrapper + HTTP laps-data fallback + integration tests + UAT
 
 ### Phase 4: Client + Distribution
