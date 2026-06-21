@@ -1,8 +1,6 @@
-"""AIO NLS Livetiming API.
+"""Transport subpackage (Phase 3)."""
 
-Async-first Python client for the official Nürburgring Langstrecken-Serie
-livetiming service at ``livetiming.azurewebsites.net``.
-"""
+from __future__ import annotations
 
 from aionlslivetiming.exceptions import (
     ConnectionError,
@@ -14,37 +12,37 @@ from aionlslivetiming.exceptions import (
     ReplaySchemaError,
     UnknownEventError,
 )
-from aionlslivetiming.logging import get_logger
-from aionlslivetiming.state import Filter, Freshness, RaceState, Source
-from aionlslivetiming.transport import (
+from aionlslivetiming.transport.base import (
     ClockOffset,
-    JsonlRecorder,
     LTSNotFoundEvent,
+    LTSNotFoundReason,
     ReconnectPolicy,
-    ReplayTransport,
     Transport,
 )
-from aionlslivetiming.version import __version__
+from aionlslivetiming.transport.recorder import JsonlRecorder
+from aionlslivetiming.transport.replay import ReplayTransport
+
+# Plan 02 will add:
+# from aionlslivetiming.transport.websocket import LiveTransport
+# Plan 03 will add:
+# from aionlslivetiming.transport.recorder import RecordingTransport
 
 __all__ = [
     "ClockOffset",
     "ConnectionError",
-    "Filter",
-    "Freshness",
     "JsonlRecorder",
     "LTSNotFoundEvent",
+    "LTSNotFoundReason",
+    "LiveTransport",  # populated by Plan 02
     "NLSError",
     "NLSHttpFallbackUnavailable",
-    "RaceState",
     "ReconnectPolicy",
+    "RecordingTransport",  # populated by Plan 03
     "ReplayEmptyError",
     "ReplayError",
     "ReplayOrderingError",
     "ReplaySchemaError",
     "ReplayTransport",
-    "Source",
     "Transport",
     "UnknownEventError",
-    "__version__",
-    "get_logger",
 ]
