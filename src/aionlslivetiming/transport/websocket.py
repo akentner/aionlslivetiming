@@ -49,7 +49,7 @@ from aionlslivetiming.events import (
     TimeSyncMessage,
     TrackStateMessage,
 )
-from aionlslivetiming.exceptions import UnknownEventError
+from aionlslivetiming.exceptions import LTSNotFoundError
 from aionlslivetiming.logging import get_logger
 from aionlslivetiming.parser import parse
 from aionlslivetiming.transport._connection import _ConnectionState
@@ -150,7 +150,7 @@ class LTSNotFoundPolicy:
 
     - ``"continue"``  — keep trying (backoff loop will reconnect)
     - ``"terminate"`` — stop reconnecting, mark connection ended
-    - ``"raise"``     — raise :class:`UnknownEventError`
+    - ``"raise"``     — raise :class:`LTSNotFoundError`
 
     Defaults match D-07::
 
@@ -375,8 +375,8 @@ class LiveTransport:
                 await self._session_loop()
             except asyncio.CancelledError:
                 raise
-            except UnknownEventError:
-                # D-07: UnknownEventError is the consumer-facing signal that the
+            except LTSNotFoundError:
+                # D-07/D-24: LTSNotFoundError is the consumer-facing signal that the
                 # event id is invalid (LTS_NOT_FOUND classified as unknown_event).
                 # The session_loop stores the exception on self._pending_messages_exc
                 # before raising, so the messages() iterator can re-raise it.
@@ -506,8 +506,8 @@ class LiveTransport:
             # on the next ``async for`` iteration; do not propagate it
             # through the reader loop (which would mask it in the
             # backoff-cycle ``except Exception`` handler).
-            self._pending_messages_exc = UnknownEventError(
-                f"LTS_NOT_FOUND for event {self._event_id!r} classified as unknown_event"
+            self._pending_messages_exc = LTSNotFoundError(
+                reason="unknown_event", event_id=self._event_id
             )
             raise self._pending_messages_exc
         if action == "terminate":

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from aionlslivetiming.events import TrackStateMessage
-from aionlslivetiming.exceptions import UnknownEventError
+from aionlslivetiming.exceptions import LTSNotFoundError
 from aionlslivetiming.transport import (
     LiveTransport,
     LTSNotFoundEvent,
@@ -121,7 +121,7 @@ TRACK_GREEN: dict[str, Any] = {
 
 
 async def test_lts_not_found_unknown_event_default_raises() -> None:
-    """D-07 default: unknown_event → raise UnknownEventError."""
+    """D-07 default: unknown_event → raise LTSNotFoundError (D-24 rename)."""
     # Frame flow: an InitialStateMessage with results (so we don't classify
     # as not_yet_started), then LTS_NOT_FOUND.
     ws = _MockWS(frames=[INIT_WITH_RESULTS, LTS_FRAME])
@@ -133,7 +133,7 @@ async def test_lts_not_found_unknown_event_default_raises() -> None:
     )
     await transport.connect()
     try:
-        with pytest.raises(UnknownEventError):
+        with pytest.raises(LTSNotFoundError):
             async with asyncio.timeout(2):
                 async for _ in transport:
                     pass
@@ -152,13 +152,15 @@ async def test_lts_not_found_yields_typed_event_before_raise() -> None:
     )
     await transport.connect()
     raised = False
+    raised_exc: BaseException | None = None
     try:
         try:
             async with asyncio.timeout(2):
                 async for _ in transport:
                     pass
-        except UnknownEventError:
+        except LTSNotFoundError as exc:
             raised = True
+            raised_exc = exc
         # Drain lts_not_found queue — the event was enqueued before the raise.
         events: list[LTSNotFoundEvent] = []
         async with asyncio.timeout(1):
@@ -169,6 +171,9 @@ async def test_lts_not_found_yields_typed_event_before_raise() -> None:
     finally:
         await transport.close()
     assert raised
+    assert isinstance(raised_exc, LTSNotFoundError)
+    assert raised_exc.reason == "unknown_event"  # type: ignore[union-attr]
+    assert raised_exc.event_id == "evt-1"  # type: ignore[union-attr]
     assert len(events) == 1
     assert events[0].reason == "unknown_event"
     assert events[0].event_id == "evt-1"
@@ -308,7 +313,7 @@ def test_lts_not_found_event_is_frozen() -> None:
 
     ev = LTSNotFoundEvent(reason="unknown_event", event_id="x", first_seen_at_ms=1000)
     with pytest.raises(dataclasses.FrozenInstanceError):
-        ev.reason = "ended"  # type: ignore[misc]
+        ev.reason = "ended"  # type: ignore[misc]  # B011: assert_false (line above is fine)
 
 
 def test_lts_not_found_event_fields_accessible() -> None:
@@ -317,3 +322,41 @@ def test_lts_not_found_event_fields_accessible() -> None:
     assert ev.reason == "ended"
     assert ev.event_id == "abc"
     assert ev.first_seen_at_ms == 1_700_000_000_000
+
+
+# ---- Phase 4 D-24 rename ----
+
+
+async def test_unknown_event_raises_lts_not_found_error_not_unknown_event_error() -> None:
+    """D-24: ``unknown_event`` classification raises ``LTSNotFoundError``, NOT
+    ``UnknownEventError`` (which is now repurposed for ``--strict`` mode).
+
+    Drive the transport into the ``unknown_event`` classification with a mocked
+    WS that returns ``{LTS_NOT_FOUND: true}`` after an InitialStateMessage so
+    the classifier doesn't pick ``not_yet_started``; assert the raised type and
+    that ``UnknownEventError`` is NOT raised.
+    """
+    from aionlslivetiming.exceptions import UnknownEventError
+
+    ws = _MockWS(frames=[INIT_WITH_RESULTS, LTS_FRAME])
+    transport = LiveTransport(
+        "evt-rename-check",
+        websockets_factory=_factory_for(ws),
+        idle_timeout_s=10.0,
+        reconnect_policy=ReconnectPolicy(max_attempts=0, initial_offset_s=0),
+    )
+    await transport.connect()
+    raised: BaseException | None = None
+    try:
+        with pytest.raises(LTSNotFoundError) as excinfo:
+            async with asyncio.timeout(2):
+                async for _ in transport:
+                    pass
+        raised = excinfo.value
+    finally:
+        await transport.close()
+    assert isinstance(raised, LTSNotFoundError)
+    assert not isinstance(raised, UnknownEventError)
+    # And carry reason + event_id per D-23.
+    assert raised.reason == "unknown_event"  # type: ignore[union-attr]
+    assert raised.event_id == "evt-rename-check"  # type: ignore[union-attr]
