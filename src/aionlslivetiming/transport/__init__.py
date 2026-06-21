@@ -20,11 +20,9 @@ from aionlslivetiming.transport.base import (
     Transport,
 )
 from aionlslivetiming.transport.recorder import JsonlRecorder
+from aionlslivetiming.transport.recorder_wrapper import RecordingTransport
 from aionlslivetiming.transport.replay import ReplayTransport
 from aionlslivetiming.transport.websocket import LiveTransport, LTSNotFoundPolicy
-
-# Plan 03 will add:
-# from aionlslivetiming.transport.recorder import RecordingTransport
 
 __all__ = [
     "ClockOffset",
@@ -37,7 +35,7 @@ __all__ = [
     "NLSError",
     "NLSHttpFallbackUnavailable",
     "ReconnectPolicy",
-    "RecordingTransport",  # populated by Plan 03
+    "RecordingTransport",
     "ReplayEmptyError",
     "ReplayError",
     "ReplayOrderingError",

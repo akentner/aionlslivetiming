@@ -23,6 +23,7 @@ from aionlslivetiming.transport import (
     LTSNotFoundEvent,
     LTSNotFoundPolicy,
     ReconnectPolicy,
+    RecordingTransport,
     ReplayTransport,
     Transport,
 )
@@ -41,6 +42,7 @@ __all__ = [
     "NLSHttpFallbackUnavailable",
     "RaceState",
     "ReconnectPolicy",
+    "RecordingTransport",
     "ReplayEmptyError",
     "ReplayError",
     "ReplayOrderingError",
