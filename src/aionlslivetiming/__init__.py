@@ -4,6 +4,7 @@ Async-first Python client for the official Nürburgring Langstrecken-Serie
 livetiming service at ``livetiming.azurewebsites.net``.
 """
 
+from aionlslivetiming.client import NLSClient
 from aionlslivetiming.exceptions import (
     ConnectionError,
     LTSNotFoundError,
@@ -42,6 +43,7 @@ __all__ = [
     "LTSNotFoundEvent",
     "LTSNotFoundPolicy",
     "LiveTransport",
+    "NLSClient",
     "NLSError",
     "NLSHttpFallbackUnavailable",
     "ParseError",
