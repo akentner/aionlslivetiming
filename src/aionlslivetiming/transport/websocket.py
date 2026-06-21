@@ -253,6 +253,9 @@ class LiveTransport:
         self._state: _ConnectionState | None = None
         self._reader_task: asyncio.Task[None] | None = None
         self._watchdog_task: asyncio.Task[None] | None = None
+        # Pending exception to raise on the messages() iterator (D-07 unknown_event).
+        # Set by the reader task, read+cleared by the iterator on EXHAUSTED.
+        self._pending_messages_exc: BaseException | None = None
 
     # ---- Public properties ----
 
@@ -322,9 +325,15 @@ class LiveTransport:
         while True:
             item = await self._messages_q.get()
             if isinstance(item, _Sentinel):
+                # D-07: re-raise a pending exception (UnknownEventError from
+                # unknown_event classification) before terminating.
+                exc = self._pending_messages_exc
+                self._pending_messages_exc = None
+                if exc is not None:
+                    raise exc
                 return
-            # Narrowing: item is Message here (queue contract), but
-            # Message is a typing.Union which mypy won't accept for
+            # Narrowing: ``item`` is Message here (queue contract), but
+            # ``Message`` is a typing.Union which mypy won't accept for
             # isinstance. Trust the contract.
             yield item
 
@@ -366,6 +375,14 @@ class LiveTransport:
                 await self._session_loop()
             except asyncio.CancelledError:
                 raise
+            except UnknownEventError:
+                # D-07: UnknownEventError is the consumer-facing signal that the
+                # event id is invalid (LTS_NOT_FOUND classified as unknown_event).
+                # The session_loop stores the exception on self._pending_messages_exc
+                # before raising, so the messages() iterator can re-raise it.
+                if self._messages_q is not None:
+                    await self._messages_q.put(_Sentinel(_SentinelKind.EXHAUSTED))
+                return
             except Exception as exc:
                 _log.warning("live transport session ended: %s", exc)
             # If the session ran for > 60s, reset the attempt counter (D-11).
@@ -485,9 +502,14 @@ class LiveTransport:
         if self._lts_q is not None:
             await self._lts_q.put(event)
         if action == "raise":
-            raise UnknownEventError(
+            # Store the exception so the messages() iterator re-raises it
+            # on the next ``async for`` iteration; do not propagate it
+            # through the reader loop (which would mask it in the
+            # backoff-cycle ``except Exception`` handler).
+            self._pending_messages_exc = UnknownEventError(
                 f"LTS_NOT_FOUND for event {self._event_id!r} classified as unknown_event"
             )
+            raise self._pending_messages_exc
         if action == "terminate":
             # Stop reconnecting: mark state ended and surface EXHAUSTED sentinel.
             assert self._state is not None
