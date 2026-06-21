@@ -63,7 +63,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Transport Protocol + exceptions + ReplayTransport + JsonlRecorder (no network)
 - [x] 03-02-PLAN.md — LiveTransport (WebSocket + handshake + heartbeat + reconnect + LTS_NOT_FOUND three-state)
-- [ ] 03-03-PLAN.md — RecordingTransport composition wrapper + HTTP laps-data fallback + integration tests + UAT
+- [x] 03-03-PLAN.md — RecordingTransport composition wrapper + HTTP laps-data fallback + integration tests + UAT
 
 ### Phase 4: Client + Distribution
 **Goal**: A single `NLSClient` composition root that wires transport → parser → state with cancellation-safe async iteration, plus CLI entry points, complete documentation, and a publish-ready PyPI package.

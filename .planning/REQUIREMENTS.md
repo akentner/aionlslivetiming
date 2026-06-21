@@ -62,9 +62,9 @@
 
 ### HTTP
 
-- [ ] **HTTP-01**: Library can fetch the per-car laps HTML page from `/event/{id}/laps-data?session=...&startingNo=...`
-- [ ] **HTTP-02**: HTTP fetch uses HA-compatible async HTTP client (httpx)
-- [ ] **HTTP-03**: HTTP endpoint is best-effort; library does not crash if the server returns HTML instead of JSON
+- [x] **HTTP-01**: Library can fetch the per-car laps HTML page from `/event/{id}/laps-data?session=...&startingNo=...`
+- [x] **HTTP-02**: HTTP fetch uses HA-compatible async HTTP client (httpx)
+- [x] **HTTP-03**: HTTP endpoint is best-effort; library does not crash if the server returns HTML instead of JSON
 
 ### Distribution & Ergonomics
 
@@ -173,9 +173,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REC-04 | Phase 3 | Complete |
 | REC-05 | Phase 3 | Complete |
 | REC-06 | Phase 3 | Complete |
-| HTTP-01 | Phase 3 | Pending |
-| HTTP-02 | Phase 3 | Pending |
-| HTTP-03 | Phase 3 | Pending |
+| HTTP-01 | Phase 3 | Complete |
+| HTTP-02 | Phase 3 | Complete |
+| HTTP-03 | Phase 3 | Complete |
 | DIST-01 | Phase 4 | Pending |
 | DIST-02 | Phase 1 | Complete |
 | DIST-03 | Phase 1 | Complete |
