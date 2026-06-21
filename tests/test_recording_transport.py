@@ -265,3 +265,46 @@ async def test_recording_transport_wraps_live_transport(tmp_path: pathlib.Path) 
     assert len(lines) == 1
     obj = json.loads(lines[0])
     assert obj["event_pid"] == 0
+
+
+# ---------- REC-02: passthrough on RecordingTransport ----------
+
+
+async def test_recording_transport_set_enabled_passthrough(tmp_path: pathlib.Path) -> None:
+    """RecordingTransport.set_enabled delegates to the inner recorder (REC-02)."""
+    src = tmp_path / "src.jsonl"
+    dst = tmp_path / "x.jsonl"
+    write_d07_jsonl(src)  # 3 messages
+
+    rec = JsonlRecorder(dst)
+    inner = ReplayTransport(src, suppress_time_sync=True)
+    transport = RecordingTransport(inner=inner, recorder=rec)
+
+    # Initially enabled
+    assert transport.is_enabled is True
+
+    # Disable before iteration: 0 messages should be persisted
+    await transport.set_enabled(False)
+    assert transport.is_enabled is False
+    await transport.connect()
+    msgs_disabled = [m async for m in transport]
+    assert len(msgs_disabled) == 3  # still yielded to the consumer
+    await transport.close()
+
+    # Nothing should have been written while disabled
+    assert not await asyncio.to_thread(_exists, dst), "recorder wrote while disabled"
+
+    # Now wrap a fresh transport and re-enable
+    rec2 = JsonlRecorder(dst)
+    inner2 = ReplayTransport(src, suppress_time_sync=True)
+    transport2 = RecordingTransport(inner=inner2, recorder=rec2)
+    assert transport2.is_enabled is True
+    msgs_enabled = [m async for m in transport2]
+    await transport2.close()
+
+    # All 3 source messages yielded
+    assert len(msgs_enabled) == 3
+    # All 3 should be on disk (recording was on throughout)
+    content = await asyncio.to_thread(_read_text, dst)
+    lines = content.strip().split("\n")
+    assert len(lines) == 3

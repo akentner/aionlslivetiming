@@ -68,6 +68,20 @@ class RecordingTransport:
         """The recorder (for inspection / flushing)."""
         return self._recorder
 
+    @property
+    def is_enabled(self) -> bool:
+        """Whether the wrapped recorder is currently persisting (REC-02)."""
+        return self._recorder.is_enabled
+
+    async def set_enabled(self, enabled: bool) -> None:
+        """Toggle the wrapped recorder at runtime (REC-02 passthrough).
+
+        Forwards to the inner ``JsonlRecorder.set_enabled``. While disabled,
+        ``__aiter__`` still forwards every message from the inner transport
+        to the consumer — only the on-disk recording pauses.
+        """
+        await self._recorder.set_enabled(enabled)
+
     async def __aenter__(self) -> RecordingTransport:
         await self.connect()
         return self
