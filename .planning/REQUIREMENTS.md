@@ -68,21 +68,21 @@
 
 ### Distribution & Ergonomics
 
-- [ ] **DIST-01**: Library is published to PyPI as `aionlslivetiming`
+- [x] **DIST-01**: Library is published to PyPI as `aionlslivetiming`
 - [x] **DIST-02**: Library uses `py.typed` (PEP 561) and ships type hints
 - [x] **DIST-03**: Library targets Python 3.12+ and documents that in the README
-- [ ] **DIST-04**: Library has zero HA-specific imports — usable as a generic Python package
-- [ ] **DIST-05**: Library provides a CLI entry point for `nls-record` and `nls-replay`
+- [x] **DIST-04**: Library has zero HA-specific imports — usable as a generic Python package
+- [x] **DIST-05**: Library provides a CLI entry point for `nls-record` and `nls-replay`
 - [x] **DIST-06**: Library has ≥80% test coverage for the parser, state, and filter layers
 - [x] **DIST-07**: Library uses HA-pinned dependency versions (pydantic, httpx, websockets, orjson) to avoid version float
 
 ### Documentation & Community
 
-- [ ] **DOC-01**: README with install, quickstart (live + replay), filter examples, and recording example
-- [ ] **DOC-02**: API reference published (mkdocs or pdoc)
-- [ ] **DOC-03**: CHANGELOG.md maintained from v0.1.0
-- [ ] **DOC-04**: MIT LICENSE
-- [ ] **DOC-05**: CONTRIBUTING.md and at least 3 worked examples
+- [x] **DOC-01**: README with install, quickstart (live + replay), filter examples, and recording example
+- [x] **DOC-02**: API reference published (mkdocs or pdoc)
+- [x] **DOC-03**: CHANGELOG.md maintained from v0.1.0
+- [x] **DOC-04**: MIT LICENSE
+- [x] **DOC-05**: CONTRIBUTING.md and at least 3 worked examples
 
 ## v2 Requirements
 
@@ -176,18 +176,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HTTP-01 | Phase 3 | Complete |
 | HTTP-02 | Phase 3 | Complete |
 | HTTP-03 | Phase 3 | Complete |
-| DIST-01 | Phase 4 | Pending |
+| DIST-01 | Phase 4 | Complete |
 | DIST-02 | Phase 1 | Complete |
 | DIST-03 | Phase 1 | Complete |
-| DIST-04 | Phase 4 | Pending |
-| DIST-05 | Phase 4 | Pending |
+| DIST-04 | Phase 4 | Complete |
+| DIST-05 | Phase 4 | Complete |
 | DIST-06 | Phase 1 | Complete |
 | DIST-07 | Phase 1 | Complete |
-| DOC-01 | Phase 4 | Pending |
-| DOC-02 | Phase 4 | Pending |
-| DOC-03 | Phase 4 | Pending |
-| DOC-04 | Phase 4 | Pending |
-| DOC-05 | Phase 4 | Pending |
+| DOC-01 | Phase 4 | Complete |
+| DOC-02 | Phase 4 | Complete |
+| DOC-03 | Phase 4 | Complete |
+| DOC-04 | Phase 4 | Complete |
+| DOC-05 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 52 total

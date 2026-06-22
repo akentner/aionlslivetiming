@@ -9,7 +9,7 @@ Build a bottom-up async-first Python client library for the Nürburgring Langstr
 - [ ] **Phase 1: Foundation (Package + Parser)** - Skeleton, HA-pinned deps, 8 typed Message dataclasses, per-PID parsers, UnknownMessage fallback, parser fixtures and unit tests
 - [x] **Phase 2: State + Filtering** - Idempotent RaceState, filter DSL (class/starting_no/driver/position/lap/sector), cache freshness, JSON export/import (completed 2026-06-20)
 - [x] **Phase 3: Transport + Replay** - Transport Protocol, LiveTransport (WebSocket + reconnect + heartbeat), ReplayTransport, RecordingTransport wrapper, HTTP laps-data fallback (completed 2026-06-21; REC-02 runtime toggle closed in Plan 03-04)
-- [ ] **Phase 4: Client + Distribution** - NLSClient composition root, async stream API with cancellation safety, CLI entry points, README/API ref/CHANGELOG/LICENSE/CONTRIBUTING, PyPI publish prep
+- [x] **Phase 4: Client + Distribution** - NLSClient composition root, async stream API with cancellation safety, CLI entry points, README/API ref/CHANGELOG/LICENSE/CONTRIBUTING, PyPI publish prep (completed 2026-06-22)
 
 ## Phase Details
 
@@ -77,11 +77,11 @@ Plans:
 **Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 04-01-PLAN.md — Exception finalization (LTSNotFoundError + ParseError) + NLSClient composition root with from_replay classmethod
-- [ ] 04-02-PLAN.md — CLI scripts: nls-record (replaces aionlslivetiming-capture) + nls-replay with --speed/--limit/--strict/--summary
-- [ ] 04-03-PLAN.md — Three runnable worked examples + bundled sample_event.jsonl fixture
-- [ ] 04-04-PLAN.md — README + LICENSE + CHANGELOG + CONTRIBUTING + mkdocs.yml + docs/ tree
-- [ ] 04-05-PLAN.md — Build verification (uv build + twine check) + CI scripts (check_no_ha_imports.sh + build.sh)
+- [x] 04-01-PLAN.md — Exception finalization (LTSNotFoundError + ParseError) + NLSClient composition root with from_replay classmethod
+- [x] 04-02-PLAN.md — CLI scripts: nls-record (replaces aionlslivetiming-capture) + nls-replay with --speed/--limit/--strict/--summary
+- [x] 04-03-PLAN.md — Three runnable worked examples + bundled sample_event.jsonl fixture
+- [x] 04-04-PLAN.md — README + LICENSE + CHANGELOG + CONTRIBUTING + mkdocs.yml + docs/ tree
+- [x] 04-05-PLAN.md — Build verification (uv build + twine check) + CI scripts (check_no_ha_imports.sh + build.sh)
 
 ## Progress
 
@@ -93,4 +93,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation (Package + Parser) | 4/4 | Complete | 2026-06-20 |
 | 2. State + Filtering | 3/3 | Complete   | 2026-06-20 |
 | 3. Transport + Replay | 4/4 | Complete   | 2026-06-21 |
-| 4. Client + Distribution | 0/TBD | Not started | - |
+| 4. Client + Distribution | 5/5 | Complete    | 2026-06-22 |
