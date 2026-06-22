@@ -45,3 +45,5 @@ site/
 .env
 .env.local
 *.log
+.claude/
+tmp/
