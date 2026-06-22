@@ -1,0 +1,66 @@
+site_name: aionlslivetiming
+site_description: Async-first Python client for the Nürburgring Langstrecken-Serie livetiming service
+site_url: https://aionlslivetiming.readthedocs.io/
+repo_url: https://github.com/akentner/aionlslivetiming
+repo_name: akentner/aionlslivetiming
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.tabs
+    - navigation.sections
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            separate_signature: true
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Examples:
+      - Live quickstart: examples/live_quickstart.py
+      - Replay offline: examples/replay_offline.py
+      - Filter walkthrough: examples/filter_walkthrough.py
+  - API Reference: api/index.md
+  - Changelog: https://github.com/akentner/aionlslivetiming/blob/main/CHANGELOG.md
+  - Contributing: https://github.com/akentner/aionlslivetiming/blob/main/CONTRIBUTING.md
+  - License: https://github.com/akentner/aionlslivetiming/blob/main/LICENSE
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - toc:
+      permalink: true
+
+exclude_docs: |
+  site/
+
+site_dir: site
