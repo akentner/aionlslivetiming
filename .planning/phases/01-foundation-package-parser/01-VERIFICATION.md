@@ -17,7 +17,7 @@ score: 9/9 must-haves verified
 
 | #   | Truth                                                                | Status     | Evidence                                                         |
 | --- | -------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------- |
-| 1   | `pip install -e .` succeeds on Python 3.12 and `import aionlslivetiming` works with `__version__` set | ✓ VERIFIED | `.venv/bin/python -c "import aionlslivetiming; print(aionlslivetiming.__version__)"` → `version: 0.1.0` |
+| 1   | `uv sync --extra dev` (README.md canonical install command) succeeds on Python 3.12 and `import aionlslivetiming` works with `__version__` set | ✓ VERIFIED | `.venv/bin/python -c "import aionlslivetiming; print(aionlslivetiming.__version__)"` → `version: 0.1.0` |
 | 2   | `py.typed` PEP 561 marker shipped in the installed package           | ✓ VERIFIED | `(pathlib.Path(aionlslivetiming.__file__).parent / 'py.typed').exists()` → `True`; src marker is 0 bytes; `[tool.hatch.build.targets.wheel.force-include]` configured |
 | 3   | `pytest` runs from project root and all suites pass                  | ✓ VERIFIED | `pytest --no-header -q` → `92 passed in 0.32s`                    |
 | 4   | `python -m aionlslivetiming.cli.jsonl_logger --help` prints usage    | ✓ VERIFIED | CLI prints full argparse usage with positional `event_id`, `output` and `--host`/`--max-seconds` flags |
@@ -110,7 +110,7 @@ All 16 short-code keys (PID, VER, EXPORTID, SESSION, CUP, HEAT, HEATTYPE, TRACKN
 | PARSE-04    | 01-03                      | Parser is pure (no I/O, no event-loop dependency)                                        | ✓ SATISFIED | Grep-verified: no aiohttp/requests/urllib imports in parser; no `async def` in parser layer |
 | PARSE-05    | 01-02                      | Each typed message is a frozen dataclass with explicit fields                            | ✓ SATISFIED | All 8 classes are `@dataclass(frozen=True, slots=True)` with explicit typed fields       |
 | DIST-02     | 01-01                      | Library uses `py.typed` (PEP 561)                                                         | ✓ SATISFIED | `py.typed` marker file present + force-included in wheel + ships in installed package    |
-| DIST-03     | 01-01                      | Library targets Python 3.12+ and documents it                                            | ✓ SATISFIED | `requires-python = ">=3.12"`; README quickstart mentions `pip install -e ".[dev]"`       |
+| DIST-03     | 01-01                      | Library targets Python 3.12+ and documents it                                            | ✓ SATISFIED | `requires-python = ">=3.12"`; README quickstart uses `uv sync --extra dev` as canonical install command       |
 | DIST-06     | 01-03                      | Library has ≥80% test coverage for parser/events                                         | ✓ SATISFIED | Coverage: 91.90% (gate 80%); `fail_under = 80` enforced in pyproject                     |
 | DIST-07     | 01-01                      | Library uses HA-pinned dependency versions                                               | ✓ SATISFIED | `pydantic==2.13.4`, `websockets>=15.0.1,<17`, `httpx>=0.28,<0.29`                          |
 
