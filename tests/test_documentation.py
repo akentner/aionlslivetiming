@@ -13,35 +13,35 @@ import pytest
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
-def test_readme_exists():
+def test_readme_exists() -> None:
     assert (ROOT / "README.md").exists()
 
 
-def test_readme_has_installation_section():
+def test_readme_has_installation_section() -> None:
     readme = (ROOT / "README.md").read_text()
     assert "## Installation" in readme
     assert "uv add aionlslivetiming" in readme or "pip install aionlslivetiming" in readme
 
 
-def test_readme_has_quickstart_section():
+def test_readme_has_quickstart_section() -> None:
     readme = (ROOT / "README.md").read_text()
     assert "##" in readme  # at least one section header
     assert "NLSClient" in readme  # at least mentions the public API
     assert "## Quickstart" in readme or "## 60-Second Quickstart" in readme
 
 
-def test_readme_references_docs():
+def test_readme_references_docs() -> None:
     readme = (ROOT / "README.md").read_text()
     assert "docs/" in readme or "docs." in readme
 
 
-def test_license_exists_and_has_mit_text():
+def test_license_exists_and_has_mit_text() -> None:
     license_text = (ROOT / "LICENSE").read_text()
     assert "MIT License" in license_text
     assert "Copyright (c) 2026 akentner" in license_text or "Copyright 2026" in license_text
 
 
-def test_changelog_exists_with_v010():
+def test_changelog_exists_with_v010() -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text()
     assert "## [0.1.0]" in changelog or "## 0.1.0" in changelog
     assert "2026-06-21" in changelog
@@ -49,7 +49,7 @@ def test_changelog_exists_with_v010():
     assert "### Removed" in changelog
 
 
-def test_contributing_exists_with_dev_setup():
+def test_contributing_exists_with_dev_setup() -> None:
     contributing = (ROOT / "CONTRIBUTING.md").read_text()
     assert "## Development setup" in contributing or "## Development Setup" in contributing
     assert "uv sync" in contributing
@@ -57,39 +57,39 @@ def test_contributing_exists_with_dev_setup():
     assert "ruff" in contributing or "mypy" in contributing
 
 
-def test_contributing_documents_dataclass_rule():
+def test_contributing_documents_dataclass_rule() -> None:
     contributing = (ROOT / "CONTRIBUTING.md").read_text()
     # The dataclass-for-events / pydantic-for-state rule per D-18
     assert "dataclass" in contributing.lower()
     assert "pydantic" in contributing.lower()
 
 
-def test_pyproject_includes_mkdocs_deps():
+def test_pyproject_includes_mkdocs_deps() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text()
     assert "mkdocs" in pyproject
     assert "mkdocs-material" in pyproject or "mkdocstrings" in pyproject
 
 
-def test_mkdocs_yml_exists():
+def test_mkdocs_yml_exists() -> None:
     assert (ROOT / "mkdocs.yml").exists()
 
 
-def test_mkdocs_yml_uses_material_theme():
+def test_mkdocs_yml_uses_material_theme() -> None:
     config = (ROOT / "mkdocs.yml").read_text()
     assert "name: material" in config
 
 
-def test_mkdocs_yml_configures_mkdocstrings():
+def test_mkdocs_yml_configures_mkdocstrings() -> None:
     config = (ROOT / "mkdocs.yml").read_text()
     assert "mkdocstrings" in config
     assert "paths: [src]" in config
 
 
-def test_docs_index_exists():
+def test_docs_index_exists() -> None:
     assert (ROOT / "docs" / "index.md").exists()
 
 
-def test_docs_quickstart_covers_all_use_cases():
+def test_docs_quickstart_covers_all_use_cases() -> None:
     quickstart = (ROOT / "docs" / "quickstart.md").read_text()
     assert "## Live" in quickstart
     assert "## Replay" in quickstart
@@ -97,7 +97,7 @@ def test_docs_quickstart_covers_all_use_cases():
     assert "## Filtering" in quickstart or "## Filter" in quickstart
 
 
-def test_docs_examples_match_examples_dir():
+def test_docs_examples_match_examples_dir() -> None:
     """docs/examples/*.py must be byte-identical to examples/*.py."""
     for name in ("live_quickstart.py", "replay_offline.py", "filter_walkthrough.py"):
         src = (ROOT / "examples" / name).read_bytes()
@@ -105,7 +105,7 @@ def test_docs_examples_match_examples_dir():
         assert src == dst, f"{name} is out of sync with examples/{name}"
 
 
-def test_mkdocs_build_succeeds_strict():
+def test_mkdocs_build_succeeds_strict() -> None:
     """`mkdocs build --strict` must succeed with no warnings.
 
     Skipped if mkdocs is not installed (the docs extra is not always present).
