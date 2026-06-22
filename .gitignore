@@ -31,6 +31,9 @@ build/
 pip-wheel-metadata/
 .pyc
 
+# mkdocs build output
+site/
+
 # IDE
 .idea/
 .vscode/
