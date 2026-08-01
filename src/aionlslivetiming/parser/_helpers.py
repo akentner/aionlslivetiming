@@ -75,6 +75,49 @@ def _opt_int(v: Any) -> int | None:
         return None
 
 
+def _pick(r: Mapping[str, Any], *keys: str) -> Any:
+    """Return the first non-``None`` value among the given keys.
+
+    Unlike ``r.get(k1) or r.get(k2)``, this preserves legitimate
+    falsy values like ``0`` and ``""`` — those are real server data,
+    not "missing".
+    """
+    for k in keys:
+        v = r.get(k)
+        if v is not None:
+            return v
+    return None
+
+
+def _parse_lap_time_ms(v: Any) -> int | None:
+    """Coerce a lap-time field to milliseconds.
+
+    The server emits lap times in two formats:
+
+    - Plain integer / numeric string (already milliseconds)
+    - ``"MM:SS.sss"`` (display format) — converted to total milliseconds
+    """
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return int(v)
+    if isinstance(v, str):
+        s = v.strip()
+        if not s:
+            return None
+        if ":" in s:
+            import re
+            m = re.match(r"^(\d+):(\d+(?:\.\d+)?)$", s)
+            if m:
+                return int((int(m.group(1)) * 60 + float(m.group(2))) * 1000)
+            return None
+        try:
+            return int(s)
+        except ValueError:
+            return None
+    return None
+
+
 def _opt_str(v: Any) -> str | None:
     """Return ``str(v)`` if *v* is not ``None``, else ``None``.
 
@@ -113,38 +156,38 @@ def _session_info(raw: Mapping[str, Any]) -> SessionInfo:
 def _car_result(r: Any) -> CarResult:
     """Build a :class:`CarResult` from a single ``RESULT``/``LEADING``/``BEST_LAPS`` row.
 
-    ``startingNo`` and ``position`` are required to be present and
-    cast to int; everything else is optional and defaults to ``None`` /
-    ``0`` (D-03). A missing or non-numeric ``startingNo``/``position``
-    falls back to ``0`` so the parser still returns a valid CarResult
-    rather than raising.
+    The server emits two key naming conventions:
 
-    Non-Mapping rows (the server occasionally emits a list element or
-    ``None`` where a dict is expected) return a placeholder CarResult
-    rather than raising, so a single bad row never crashes the whole
-    frame.
+    - Modern SPA: ``startingNo``, ``position``, ``class``, ``driver``,
+      ``laps``, ``totalTime``, ``gap``, ``best``
+    - Older / alternative: ``STNR``, ``POSITION``, ``CLASSNAME``, ``NAME``,
+      ``LAPS``, ``INT``, ``GAP``, ``FASTESTLAP``
+
+    Both shapes are accepted. All values are strings; ``int()`` casts
+    on bad input fall back to ``0``/``None`` per D-03. Non-Mapping
+    rows return a placeholder rather than raising.
     """
     if not isinstance(r, Mapping):
         return CarResult(starting_no=0, position=0)
-    starting_no_raw = r.get("startingNo")
-    position_raw = r.get("position")
-    try:
-        starting_no = int(starting_no_raw) if starting_no_raw is not None else 0
-    except (TypeError, ValueError):
-        starting_no = 0
-    try:
-        position = int(position_raw) if position_raw is not None else 0
-    except (TypeError, ValueError):
-        position = 0
+
+    starting_no = _opt_int(_pick(r, "startingNo", "STNR")) or 0
+    position = _opt_int(_pick(r, "position", "POSITION")) or 0
+    class_name = _opt_str(_pick(r, "class", "CLASSNAME"))
+    driver = _opt_str(_pick(r, "driver", "NAME"))
+    laps = _opt_int(_pick(r, "laps", "LAPS")) or 0
+    total_time_ms = _opt_int(_pick(r, "totalTime", "INT"))
+    gap_to_leader_ms = _opt_int(_pick(r, "gap", "GAP"))
+    best_lap_ms = _parse_lap_time_ms(_pick(r, "best", "FASTESTLAP"))
+
     return CarResult(
         starting_no=starting_no,
         position=position,
-        class_name=_opt_str(r.get("class")),
-        driver=_opt_str(r.get("driver")),
-        laps=_opt_int(r.get("laps")) or 0,
-        total_time_ms=_opt_int(r.get("totalTime")),
-        gap_to_leader_ms=_opt_int(r.get("gap")),
-        best_lap_ms=_opt_int(r.get("best")),
+        class_name=class_name,
+        driver=driver,
+        laps=laps,
+        total_time_ms=total_time_ms,
+        gap_to_leader_ms=gap_to_leader_ms,
+        best_lap_ms=best_lap_ms,
     )
 
 
