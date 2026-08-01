@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aionlslivetiming"
-version = "0.1.1"
+version = "0.1.2"
 description = "Async-first Python client for the Nürburgring Langstrecken-Serie livetiming service"
 readme = "README.md"
 license = { text = "MIT" }

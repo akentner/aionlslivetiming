@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-01
+
+### Fixed
+- Parser: PID 0 RESULT rows now accept both modern (`startingNo`,
+  `position`, `class`, `driver`) and legacy (`STNR`, `POSITION`,
+  `CLASSNAME`, `NAME`) field names. The live NLS feed uses the legacy
+  shape — previous code dropped all fields because they didn't match
+  the modern names, leaving every car with `starting_no=0`.
+- Best lap time (`FASTESTLAP`) is parsed as `MM:SS.sss` display
+  string and converted to milliseconds; previously the field was
+  unparseable.
+- PID 7 (per-car laps) accepts `STNR`/`SESSION` alongside
+  `startingNo`/`session`; empty keep-alive frames no longer trigger
+  the missing-field warning.
+
 ## [0.1.1] - 2026-08-01
 
 ### Fixed
