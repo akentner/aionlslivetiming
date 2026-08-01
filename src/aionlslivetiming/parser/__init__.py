@@ -66,12 +66,12 @@ def parse(raw: Mapping[str, Any]) -> Message:
         return parse_time_sync(raw)
 
     pid = raw.get("eventPid")
-    # Some PID 0 frames (notably the LTS_NOT_FOUND lazy initial state)
-    # omit the ``eventPid`` discriminator but still set ``PID == 0`` in
-    # the short-code payload. Fall back to ``PID`` so those frames
-    # still hit the initial-state parser instead of UnknownMessage.
-    if pid is None and raw.get("PID") == 0:
-        pid = 0
+    if pid is None:
+        pid = raw.get("PID")
+    try:
+        pid = int(pid) if pid is not None else None
+    except (TypeError, ValueError):
+        pid = None
     match pid:
         case 0:
             return parse_pid_0(raw)
