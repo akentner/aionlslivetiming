@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-01
+
+### Fixed
+- Parser: dispatcher in `parse()` now reads `raw["PID"]` as a fallback when
+  `raw["eventPid"]` is absent. The NLS server's outgoing frames use the
+  short key `PID` to identify the channel; the dispatcher was only checking
+  `eventPid`, causing every real frame to fall through to `UnknownMessage`
+  with `event_pid=-1`. Discovered while connected to a live 6h race event
+  on 2026-08-01.
+
+### Added
+- `examples/live_tail.py` — connect to a live event and stream messages
+  with periodic standings snapshots.
+
 ## [0.1.0] - 2026-06-21
 
 ### Added
