@@ -19,11 +19,18 @@ from aionlslivetiming.events.unknown import UnknownMessage
 __all__ = ["parse_unknown"]
 
 
-def parse_unknown(raw: Mapping[str, Any], event_pid: int) -> UnknownMessage:
+def parse_unknown(raw: Any, event_pid: int) -> UnknownMessage:
     """Wrap an unrecognised payload in an :class:`UnknownMessage`.
 
     The WARNING log emission happens at the dispatcher level (the
     call to :func:`warn_missing`) so the dedupe set is keyed on the
     actual unknown PID. This function only does the construction.
+
+    Non-Mapping payloads are stored verbatim so consumers can inspect
+    them later.
     """
-    return UnknownMessage(event_pid=event_pid, raw=dict(raw))
+    if isinstance(raw, Mapping):
+        stored = dict(raw)
+    else:
+        stored = {"_raw_non_mapping": raw}
+    return UnknownMessage(event_pid=event_pid, raw=stored)

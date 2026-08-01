@@ -124,6 +124,7 @@ async def live_tail(event_id: str, only: list | None, write_jsonl: Path | None) 
 
     snapshot_every = 25
     since_snapshot = 0
+    initial_cars_printed = False
 
     try:
         async with NLSClient(event_id=event_id) as client:
@@ -137,6 +138,16 @@ async def live_tail(event_id: str, only: list | None, write_jsonl: Path | None) 
             async for msg in client.messages():
                 if only is not None and not any(filt(msg) for filt in only):
                     continue
+
+                if (
+                    not initial_cars_printed
+                    and isinstance(msg, InitialStateMessage)
+                    and len(client.state.cars) > 0
+                ):
+                    snap = fmt_state_snapshot(client.state, top_n=5)
+                    if snap:
+                        print(snap, flush=True)
+                    initial_cars_printed = True
 
                 now_ms = int(time.time() * 1000)
 

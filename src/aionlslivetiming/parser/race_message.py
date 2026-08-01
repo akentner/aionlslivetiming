@@ -28,16 +28,37 @@ _EVENT_PID = 3
 
 
 def parse_pid_3(raw: Mapping[str, Any]) -> RaceMessage:
-    """Parse a PID 3 payload into a :class:`RaceMessage`."""
-    if "text" not in raw:
+    """Parse a PID 3 payload into a :class:`RaceMessage`.
+
+    The server wraps each race-control message in a ``MESSAGES`` list
+    with the actual text in ``MESSAGES[0].MESSAGE`` and category in
+    ``MESSAGES[0].MESSAGEGROUP``. Top-level ``text``/``type`` fields
+    are also accepted for forward-compat with older / alternative
+    server payloads.
+    """
+    messages = raw.get("MESSAGES") or []
+    first = messages[0] if isinstance(messages, list) and messages else None
+
+    if first is None and "text" not in raw:
         warn_missing("text", _EVENT_PID)
-    if "type" not in raw:
+    if first is None and "type" not in raw:
         warn_missing("type", _EVENT_PID)
 
+    if first is not None:
+        text = str(first.get("MESSAGE", ""))
+        category = str(first.get("MESSAGEGROUP", "") or "INFO")
+        starting_no = _opt_int(first.get("STARTING_NO") or first.get("startingNo"))
+        session = _opt_str(first.get("SESSION") or first.get("session"))
+    else:
+        text = str(raw.get("text", ""))
+        category = str(raw.get("type", "INFO"))
+        starting_no = _opt_int(raw.get("startingNo"))
+        session = _opt_str(raw.get("session"))
+
     return RaceMessage(
-        text=str(raw.get("text", "")),
-        category=str(raw.get("type", "INFO")),
-        starting_no=_opt_int(raw.get("startingNo")),
-        session=_opt_str(raw.get("session")),
+        text=text,
+        category=category,
+        starting_no=starting_no,
+        session=session,
         raw=dict(raw),
     )

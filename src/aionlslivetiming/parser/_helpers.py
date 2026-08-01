@@ -110,7 +110,7 @@ def _session_info(raw: Mapping[str, Any]) -> SessionInfo:
     )
 
 
-def _car_result(r: Mapping[str, Any]) -> CarResult:
+def _car_result(r: Any) -> CarResult:
     """Build a :class:`CarResult` from a single ``RESULT``/``LEADING``/``BEST_LAPS`` row.
 
     ``startingNo`` and ``position`` are required to be present and
@@ -118,7 +118,14 @@ def _car_result(r: Mapping[str, Any]) -> CarResult:
     ``0`` (D-03). A missing or non-numeric ``startingNo``/``position``
     falls back to ``0`` so the parser still returns a valid CarResult
     rather than raising.
+
+    Non-Mapping rows (the server occasionally emits a list element or
+    ``None`` where a dict is expected) return a placeholder CarResult
+    rather than raising, so a single bad row never crashes the whole
+    frame.
     """
+    if not isinstance(r, Mapping):
+        return CarResult(starting_no=0, position=0)
     starting_no_raw = r.get("startingNo")
     position_raw = r.get("position")
     try:
@@ -141,13 +148,17 @@ def _car_result(r: Mapping[str, Any]) -> CarResult:
     )
 
 
-def _best_sector(b: Mapping[str, Any]) -> BestSector:
+def _best_sector(b: Any) -> BestSector:
     """Build a :class:`BestSector` from a single ``BEST``/``BEST_SECTORS`` row.
 
     ``startingNo``, ``sector`` and ``value`` are required to be present
     and cast to int; ``driver`` is optional. A missing or non-numeric
     ``startingNo``/``sector``/``value`` falls back to ``0`` (D-03).
+
+    Non-Mapping rows return a placeholder rather than raising.
     """
+    if not isinstance(b, Mapping):
+        return BestSector(starting_no=0, sector=0, value_ms=0)
     starting_no_raw = b.get("startingNo")
     sector_raw = b.get("sector")
     value_raw = b.get("value")

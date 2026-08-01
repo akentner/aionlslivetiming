@@ -47,7 +47,7 @@ __all__ = [
 ]
 
 
-def parse(raw: Mapping[str, Any]) -> Message:
+def parse(raw: Any) -> Message:
     """Dispatch a raw server frame onto the matching typed ``Message``.
 
     D-05: the ``{"type": "time", "value": <ms>}`` time-sync frame is
@@ -61,7 +61,14 @@ def parse(raw: Mapping[str, Any]) -> Message:
     D-03: never raises on a known-PID / missing-field / malformed
     payload — each leaf constructs the ``Message`` with optional
     fields defaulting to ``None`` / ``()`` instead.
+
+    Top-level payloads that are not objects (e.g. raw lists or strings
+    emitted by some server edge cases) fall through to
+    :class:`UnknownMessage` without raising.
     """
+    if not isinstance(raw, Mapping):
+        return parse_unknown({}, -1)
+
     if raw.get("type") == "time":
         return parse_time_sync(raw)
 
@@ -89,5 +96,7 @@ def parse(raw: Mapping[str, Any]) -> Message:
             # D-04: unknown PID — return UnknownMessage, log WARNING
             # exactly once per process per unknown PID.
             pid_int = int(pid) if isinstance(pid, int) else -1
+            if pid_int == -1:
+                return parse_unknown(dict(raw), -1)
             warn_missing(f"unknown_eventPid:{pid_int}", pid_int)
-            return parse_unknown(raw, pid_int)
+            return parse_unknown(dict(raw), pid_int)
