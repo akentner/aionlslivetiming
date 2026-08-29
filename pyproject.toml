@@ -31,7 +31,7 @@ classifiers = [
 ]
 dependencies = [
     "pydantic==2.13.4",
-    "websockets>=15.0.1,<17",
+    "websockets>=17.1,<18",
     "httpx>=0.28,<0.29",
 ]
 
